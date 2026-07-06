@@ -11,21 +11,15 @@ const breakingItems = [
 
 const BreakingNews = () => {
   return (
-    <div className="bg-white border-b border-gray-100">
-      <div className="container mx-auto flex items-center gap-0 overflow-hidden">
-        {/* Badge */}
-        <div
-          className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 text-white text-xs font-bold uppercase tracking-wider z-10"
-          style={{ background: "linear-gradient(135deg, #dc2626, #b91c1c)" }}
-        >
+    <div className="bg-white border-y border-gray-200">
+      <div className="container mx-auto px-4 flex items-center">
+        <div className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 font-bold uppercase tracking-wider text-xs">
           <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
-          Breaking
+          Latest
         </div>
 
-        {/* Divider */}
-        <div className="w-px h-8 bg-gray-200 flex-shrink-0"></div>
+        <div className="w-px h-6 bg-gray-200 mx-2 hidden sm:block"></div>
 
-        {/* Marquee */}
         <div className="flex-1 overflow-hidden">
           <Marquee pauseOnHover={true} speed={45} gradient={false}>
             {breakingItems.map((item, i) => (

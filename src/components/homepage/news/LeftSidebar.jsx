@@ -4,9 +4,8 @@ import Image from "next/image";
 import { getNewsByCategoryId } from "@/lib/data";
 
 const LeftSidebar = async () => {
-  // Let's fetch some top news for Editor's Pick
   const news = await getNewsByCategoryId("08");
-  const topNews = news.slice(0, 3); // Just taking top 3
+  const topNews = news.slice(0, 3);
 
   return (
     <div className="sticky top-4 space-y-6 hidden lg:block">

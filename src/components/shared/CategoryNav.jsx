@@ -9,8 +9,6 @@ const CategoryNav = async () => {
   return (
     <div className="w-full bg-white border-b border-gray-200">
       <div className="container mx-auto px-4 flex items-center justify-between py-2">
-        
-        {/* Left Side: Nav Links */}
         <ul className="flex items-center gap-4 text-sm font-semibold text-gray-700">
           <li>
             <Link href="/" className="hover:text-red-600 transition-colors">Home</Link>
@@ -23,7 +21,6 @@ const CategoryNav = async () => {
           </li>
         </ul>
 
-        {/* Middle: Categories */}
         <ul className="flex items-center justify-center gap-6 overflow-x-auto whitespace-nowrap text-xs font-bold text-gray-700 uppercase tracking-wide">
           {categories.news_category.map((category) => (
             <li key={category.category_id}>
@@ -37,7 +34,6 @@ const CategoryNav = async () => {
           ))}
         </ul>
 
-        {/* Right Side: Login / User */}
         <div>
           <AuthButtons />
         </div>
