@@ -1,0 +1,254 @@
+{
+  "categories": [
+    { "category_id": "01", "category_name": "Breaking News" },
+    { "category_id": "02", "category_name": "Regular News" },
+    { "category_id": "03", "category_name": "International" },
+    { "category_id": "04", "category_name": "Sports" },
+    { "category_id": "05", "category_name": "Entertainment" },
+    { "category_id": "06", "category_name": "Culture" },
+    { "category_id": "07", "category_name": "Arts" },
+    { "category_id": "08", "category_name": "All News" }
+  ],
+  "news": [
+    {
+      "_id": "0282e0e58a5c404fbd15261f11c2ab6a",
+      "others_info": { "is_todays_pick": true, "is_trending": true },
+      "category_id": "01",
+      "rating": { "number": 4.5, "badge": "Excellent" },
+      "total_view": 4880,
+      "title": "Biden Pledges Nearly $3 Billion To Ukraine In Largest U.S. Military Aid Package Yet",
+      "author": {
+        "name": "Jimmy Dane",
+        "published_date": "2024-08-24 17:27:34",
+        "img": "https://randomuser.me/api/portraits/men/11.jpg"
+      },
+      "thumbnail_url": "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400&q=80",
+      "image_url": "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=800&q=80",
+      "details": "U.S. President Joe Biden has announced nearly $3 billion in new U.S. military aid for Kyiv as Ukraine marked its independence day six months after Russia invaded the country. The package includes advanced artillery systems, ammunition, and air defense equipment that Ukraine has been urgently requesting. Officials say this represents the largest single military aid commitment since the conflict began, signaling Washington's long-term commitment to Kyiv's defense efforts against Russian aggression."
+    },
+    {
+      "_id": "f69a695f037cd9484cecaea37ca71011",
+      "others_info": { "is_todays_pick": false, "is_trending": true },
+      "category_id": "01",
+      "rating": { "number": 4.8, "badge": "Excellent" },
+      "total_view": 6400,
+      "title": "Global Leaders Convene Emergency Summit on Climate Crisis",
+      "author": {
+        "name": "Jennifer Wood",
+        "published_date": "2024-09-15 10:38:45",
+        "img": "https://randomuser.me/api/portraits/women/22.jpg"
+      },
+      "thumbnail_url": "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&q=80",
+      "image_url": "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80",
+      "details": "World leaders gathered in Geneva for an emergency summit to address the accelerating climate crisis, with record temperatures hitting over 60 countries this summer. The summit produced a landmark agreement committing all G20 nations to achieve carbon neutrality by 2045, five years ahead of previous targets. Climate scientists hailed the deal as a crucial turning point, though critics argue enforcement mechanisms remain too weak to ensure compliance across the participating nations."
+    },
+    {
+      "_id": "breaking003",
+      "others_info": { "is_todays_pick": false, "is_trending": true },
+      "category_id": "01",
+      "rating": { "number": 4.3, "badge": "Excellent" },
+      "total_view": 3200,
+      "title": "Major Earthquake Strikes Southeast Asia: Rescue Operations Underway",
+      "author": {
+        "name": "Rashed Chowdhury",
+        "published_date": "2024-10-05 06:15:00",
+        "img": "https://randomuser.me/api/portraits/men/33.jpg"
+      },
+      "thumbnail_url": "https://images.unsplash.com/photo-1584949091598-c31daaaa4aa9?w=400&q=80",
+      "image_url": "https://images.unsplash.com/photo-1584949091598-c31daaaa4aa9?w=800&q=80",
+      "details": "A powerful 7.4 magnitude earthquake struck the coastal regions of Southeast Asia early this morning, causing widespread devastation across multiple cities. Emergency response teams from over a dozen countries have been mobilized, with rescue helicopters conducting aerial surveys of the worst-hit areas. International humanitarian organizations are coordinating relief efforts to deliver food, clean water, and medical supplies to hundreds of thousands of displaced residents across the region."
+    },
+    {
+      "_id": "regular001",
+      "others_info": { "is_todays_pick": true, "is_trending": false },
+      "category_id": "02",
+      "rating": { "number": 4.1, "badge": "Good" },
+      "total_view": 2100,
+      "title": "City Council Approves New Public Transport Expansion Plan",
+      "author": {
+        "name": "Amina Hassan",
+        "published_date": "2024-09-20 09:00:00",
+        "img": "https://randomuser.me/api/portraits/women/44.jpg"
+      },
+      "thumbnail_url": "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&q=80",
+      "image_url": "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&q=80",
+      "details": "The city council voted unanimously to approve a comprehensive public transport expansion plan that will add 150 kilometers of new metro lines and 300 electric bus routes over the next five years. The $4 billion investment is expected to reduce traffic congestion by 35% and cut the city's carbon emissions significantly. Construction is set to begin in early spring, with the first new metro stations opening within 18 months of groundbreaking on the major corridors."
+    },
+    {
+      "_id": "regular002",
+      "others_info": { "is_todays_pick": false, "is_trending": false },
+      "category_id": "02",
+      "rating": { "number": 3.9, "badge": "Good" },
+      "total_view": 1500,
+      "title": "Local Schools See Record Enrollment Following New Education Reforms",
+      "author": {
+        "name": "David Okonkwo",
+        "published_date": "2024-09-18 14:30:00",
+        "img": "https://randomuser.me/api/portraits/men/55.jpg"
+      },
+      "thumbnail_url": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=400&q=80",
+      "image_url": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&q=80",
+      "details": "Public schools across the district are reporting record enrollment numbers following the implementation of sweeping education reforms introduced last year. The reforms, which include free school meals, extended learning hours, and enhanced teacher training programs, have attracted thousands of students who previously attended private institutions. Education officials attribute the trend to improved learning outcomes and a significant increase in parent satisfaction scores district-wide."
+    },
+    {
+      "_id": "international001",
+      "others_info": { "is_todays_pick": false, "is_trending": true },
+      "category_id": "03",
+      "rating": { "number": 4.6, "badge": "Excellent" },
+      "total_view": 5500,
+      "title": "EU Reaches Historic Trade Agreement with Southeast Asian Nations",
+      "author": {
+        "name": "Sophie Müller",
+        "published_date": "2024-10-01 11:20:00",
+        "img": "https://randomuser.me/api/portraits/women/66.jpg"
+      },
+      "thumbnail_url": "https://images.unsplash.com/photo-1529400971008-f566de0e6dfc?w=400&q=80",
+      "image_url": "https://images.unsplash.com/photo-1529400971008-f566de0e6dfc?w=800&q=80",
+      "details": "After a decade of negotiations, the European Union has signed a landmark free trade agreement with the Association of Southeast Asian Nations, covering a combined GDP of over $25 trillion. The deal eliminates tariffs on 95% of goods traded between the regions and establishes new standards for digital commerce, intellectual property protection, and environmental sustainability. Economists predict the agreement will boost bilateral trade by over 40% within the first three years of full implementation."
+    },
+    {
+      "_id": "international002",
+      "others_info": { "is_todays_pick": true, "is_trending": false },
+      "category_id": "03",
+      "rating": { "number": 4.2, "badge": "Good" },
+      "total_view": 3300,
+      "title": "UN Security Council Passes Resolution on Artificial Intelligence Governance",
+      "author": {
+        "name": "Karim Al-Amin",
+        "published_date": "2024-09-28 16:45:00",
+        "img": "https://randomuser.me/api/portraits/men/77.jpg"
+      },
+      "thumbnail_url": "https://images.unsplash.com/photo-1535378917042-10a22c95931a?w=400&q=80",
+      "image_url": "https://images.unsplash.com/photo-1535378917042-10a22c95931a?w=800&q=80",
+      "details": "The UN Security Council unanimously adopted a resolution establishing an international framework for governing artificial intelligence technologies, marking the first binding multilateral agreement in the field. The resolution calls for member states to implement national AI safety standards, share research on potential risks, and participate in a newly created UN AI Monitoring Agency. Tech industry leaders expressed cautious support while urging governments to avoid measures that could stifle innovation and competitiveness."
+    },
+    {
+      "_id": "sports001",
+      "others_info": { "is_todays_pick": false, "is_trending": true },
+      "category_id": "04",
+      "rating": { "number": 4.7, "badge": "Excellent" },
+      "total_view": 7800,
+      "title": "Bangladesh Cricket Team Wins Historic Test Series Against England",
+      "author": {
+        "name": "Farhan Islam",
+        "published_date": "2024-09-25 20:00:00",
+        "img": "https://randomuser.me/api/portraits/men/88.jpg"
+      },
+      "thumbnail_url": "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=400&q=80",
+      "image_url": "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=800&q=80",
+      "details": "In a stunning upset that has set the cricketing world abuzz, the Bangladesh national cricket team clinched a historic 2-1 Test series victory against England on home soil. Captain Shakib Al Hasan led from the front with a spectacular century in the deciding Test, while spinner Mehidy Hasan took a match-winning 8 wickets across both innings. The victory marks Bangladesh's first ever Test series win against one of the traditional cricketing powerhouses and has sparked massive celebrations across the country."
+    },
+    {
+      "_id": "sports002",
+      "others_info": { "is_todays_pick": false, "is_trending": false },
+      "category_id": "04",
+      "rating": { "number": 4.4, "badge": "Excellent" },
+      "total_view": 4200,
+      "title": "Olympic Committee Announces 2028 LA Games Venue Upgrades",
+      "author": {
+        "name": "Maria Santos",
+        "published_date": "2024-09-10 13:00:00",
+        "img": "https://randomuser.me/api/portraits/women/12.jpg"
+      },
+      "thumbnail_url": "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&q=80",
+      "image_url": "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800&q=80",
+      "details": "The International Olympic Committee unveiled ambitious plans for venue upgrades ahead of the 2028 Los Angeles Games, with a $2.1 billion investment focused on sustainability and spectator experience. The upgrades include a fully solar-powered Olympic stadium, an expanded athlete village with capacity for 16,000 athletes, and state-of-the-art digital fan engagement systems. Officials emphasize that 85% of venues will be repurposed for community use after the Games, fulfilling LA's promise of a legacy-focused Olympics for generations to come."
+    },
+    {
+      "_id": "entertainment001",
+      "others_info": { "is_todays_pick": true, "is_trending": true },
+      "category_id": "05",
+      "rating": { "number": 4.9, "badge": "Excellent" },
+      "total_view": 12000,
+      "title": "Streaming Wars Heat Up as Global Platform Announces 500 New Original Productions",
+      "author": {
+        "name": "Priya Sharma",
+        "published_date": "2024-10-03 08:30:00",
+        "img": "https://randomuser.me/api/portraits/women/23.jpg"
+      },
+      "thumbnail_url": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400&q=80",
+      "image_url": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&q=80",
+      "details": "In a bold move to dominate the global streaming landscape, a major entertainment platform announced a groundbreaking $15 billion commitment to produce 500 original series and films over the next two years. The slate includes projects from filmmakers and storytellers across 45 countries, with a particular emphasis on South Asian, African, and Latin American narratives. The announcement comes as the platform reported surpassing 350 million subscribers worldwide, cementing its position as the world's most-watched streaming service."
+    },
+    {
+      "_id": "entertainment002",
+      "others_info": { "is_todays_pick": false, "is_trending": false },
+      "category_id": "05",
+      "rating": { "number": 4.2, "badge": "Good" },
+      "total_view": 5600,
+      "title": "Music Festival Season Breaks Attendance Records Worldwide",
+      "author": {
+        "name": "Leo Fontaine",
+        "published_date": "2024-09-05 17:00:00",
+        "img": "https://randomuser.me/api/portraits/men/34.jpg"
+      },
+      "thumbnail_url": "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&q=80",
+      "image_url": "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&q=80",
+      "details": "This summer's music festival season has shattered attendance records globally, with total ticket sales surpassing 85 million across 2,400 festivals in 70 countries. Industry analysts credit the boom to pent-up demand following several years of pandemic-related cancellations, combined with a new generation of music fans eager for live experiences. Major headliners commanded unprecedented fees, with top-tier artists reportedly earning more from a single festival appearance than from entire album release cycles just five years ago."
+    },
+    {
+      "_id": "culture001",
+      "others_info": { "is_todays_pick": false, "is_trending": true },
+      "category_id": "06",
+      "rating": { "number": 4.3, "badge": "Excellent" },
+      "total_view": 3900,
+      "title": "Ancient Manuscript Collection Goes Digital: 50,000 Historic Texts Now Freely Accessible",
+      "author": {
+        "name": "Yasmin Begum",
+        "published_date": "2024-09-22 10:15:00",
+        "img": "https://randomuser.me/api/portraits/women/45.jpg"
+      },
+      "thumbnail_url": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&q=80",
+      "image_url": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=80",
+      "details": "A landmark digitization project has made 50,000 ancient manuscripts from libraries across 30 countries freely available online, giving researchers and the public unprecedented access to some of humanity's oldest written records. The collection spans texts in over 120 languages and includes works of philosophy, medicine, astronomy, and literature dating back more than 2,000 years. The project used advanced AI scanning technology to produce high-resolution images that reveal details invisible to the naked eye."
+    },
+    {
+      "_id": "culture002",
+      "others_info": { "is_todays_pick": false, "is_trending": false },
+      "category_id": "06",
+      "rating": { "number": 4.0, "badge": "Good" },
+      "total_view": 2700,
+      "title": "Global Food Festival Celebrates Culinary Heritage of 80 Nations",
+      "author": {
+        "name": "Carlos Rivera",
+        "published_date": "2024-09-12 12:00:00",
+        "img": "https://randomuser.me/api/portraits/men/56.jpg"
+      },
+      "thumbnail_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80",
+      "image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80",
+      "details": "The annual International Food Festival drew record crowds of over 2 million visitors across its ten-day run, with culinary ambassadors from 80 nations showcasing their countries' authentic traditional cuisines and contemporary gastronomy. Celebrity chefs conducted live cooking demonstrations, while cultural programs featuring traditional music and dance provided context for the food being served. Organizers report the festival generated $120 million in economic activity for the host city."
+    },
+    {
+      "_id": "arts001",
+      "others_info": { "is_todays_pick": true, "is_trending": false },
+      "category_id": "07",
+      "rating": { "number": 4.5, "badge": "Excellent" },
+      "total_view": 4100,
+      "title": "Contemporary Art Exhibition Explores Technology and Human Connection",
+      "author": {
+        "name": "Nadia Petrov",
+        "published_date": "2024-10-02 09:45:00",
+        "img": "https://randomuser.me/api/portraits/women/67.jpg"
+      },
+      "thumbnail_url": "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&q=80",
+      "image_url": "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80",
+      "details": "A groundbreaking contemporary art exhibition exploring the intersection of technology and human connection has opened to critical acclaim at the National Gallery of Modern Art. Featuring works by 45 artists from 25 countries, the exhibition uses immersive installations, generative AI art, and interactive digital sculptures to examine how technology is reshaping human relationships and identity. Particularly notable is a room-sized installation that uses biometric data from visitors to create unique, personalized visual experiences."
+    },
+    {
+      "_id": "arts002",
+      "others_info": { "is_todays_pick": false, "is_trending": true },
+      "category_id": "07",
+      "rating": { "number": 4.7, "badge": "Excellent" },
+      "total_view": 6200,
+      "title": "Young Photographer Wins World Press Photo Award with Striking Climate Series",
+      "author": {
+        "name": "Tomoko Watanabe",
+        "published_date": "2024-09-30 15:30:00",
+        "img": "https://randomuser.me/api/portraits/women/78.jpg"
+      },
+      "thumbnail_url": "https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?w=400&q=80",
+      "image_url": "https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?w=800&q=80",
+      "details": "A 24-year-old photographer from the Maldives has won the prestigious World Press Photo of the Year award for a series of images documenting communities living with the immediate consequences of rising sea levels. The stark and moving photographs, taken over three years across six island nations, have been praised for their emotional depth and technical mastery. The award winner said the recognition has given her platform to call for urgent action on climate change and to ensure these stories reach a wider global audience."
+    }
+  ]
+}
