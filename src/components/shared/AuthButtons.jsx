@@ -14,6 +14,8 @@ const AuthButtons = () => {
   }
 
   if (user) {
+    const dashboardLink = user.role === "editor" ? "/editor" : user.role === "admin" ? "/admin" : "/journalist";
+    
     return (
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
@@ -31,9 +33,18 @@ const AuthButtons = () => {
             {user.name}
           </span>
         </div>
+        <Link 
+          href={dashboardLink}
+          className="text-xs font-semibold px-3 py-1.5 rounded-lg text-white bg-slate-800 hover:bg-slate-700 transition-colors"
+        >
+          Dashboard
+        </Link>
         <button
           className="text-xs font-medium px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
-          onClick={async () => await authClient.signOut()}
+          onClick={async () => {
+            await authClient.signOut();
+            window.location.href = "/";
+          }}
         >
           Sign Out
         </button>
