@@ -16,12 +16,13 @@ import {
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 
-const ROLES = ["journalist", "editor", "admin"];
+const ROLES = ["user", "journalist", "editor", "admin"];
 
 const ROLE_COLORS = {
   admin: "bg-red-100 text-red-700 border-red-200",
   editor: "bg-indigo-100 text-indigo-700 border-indigo-200",
   journalist: "bg-slate-100 text-slate-700 border-slate-200",
+  user: "bg-gray-100 text-gray-700 border-gray-200",
 };
 
 export default function AdminUsersPage() {
