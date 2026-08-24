@@ -33,9 +33,9 @@ const RegisterPage = () => {
       }
 
       if (res) {
-        setSuccessMsg("Account created! Redirecting to dashboard...");
+        setSuccessMsg("Account created! Redirecting...");
         setTimeout(() => {
-          window.location.href = "/journalist";
+          window.location.href = "/";
         }, 1500);
       }
     } catch (err) {
@@ -48,7 +48,7 @@ const RegisterPage = () => {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/journalist",
+        callbackURL: "/api/auth/role-redirect",
       });
     } catch (err) {
       setErrorMsg("Google signup failed. Please try again.");

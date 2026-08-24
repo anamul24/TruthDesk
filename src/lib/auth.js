@@ -25,8 +25,8 @@ export const auth = betterAuth({
 
   plugins: [
     admin({
-      // New users created via admin plugin default to 'journalist'
-      defaultRole: "journalist",
+      // New users created via admin plugin default to 'user'
+      defaultRole: "user",
     }),
   ],
 
@@ -50,7 +50,7 @@ export const auth = betterAuth({
     },
   },
 
-  // Ensure every new signup always gets 'journalist' as the default role
+  // Ensure every new signup always gets 'user' as the default role
   databaseHooks: {
     user: {
       create: {
@@ -58,7 +58,7 @@ export const auth = betterAuth({
           return {
             data: {
               ...user,
-              role: user.role || "journalist",
+              role: user.role || "user",
             },
           };
         },

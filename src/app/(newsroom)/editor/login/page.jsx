@@ -3,31 +3,19 @@ import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useSearchParams } from "next/navigation";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
+import { ClipboardCheck } from "lucide-react";
 
-const LoginPage = () => {
+export default function EditorLoginPage() {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm();
 
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl");
-
   const [isShowPassword, setIsShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [googleLoading, setGoogleLoading] = useState(false);
-
-  const getRoleRedirect = (role) => {
-    if (callbackUrl) return callbackUrl;
-    if (role === "editor") return "/editor";
-    if (role === "admin") return "/admin";
-    if (role === "journalist") return "/journalist";
-    // Regular 'user' role → home page
-    return "/";
-  };
 
   const handleLoginFunc = async (data) => {
     setErrorMsg("");
@@ -42,9 +30,18 @@ const LoginPage = () => {
         setErrorMsg(error.message || "Login failed. Please try again.");
         return;
       }
+
       if (res) {
-        const redirectTo = getRoleRedirect(res.user?.role);
-        window.location.href = redirectTo;
+        const role = res.user?.role;
+        // Only editors and admins can access editor dashboard
+        if (role === "editor" || role === "admin") {
+          window.location.href = "/editor";
+        } else {
+          setErrorMsg(
+            "Access denied. This login is for Editors only. Your account role is: " +
+              (role || "user")
+          );
+        }
       }
     } catch (err) {
       setErrorMsg("Connection error. Please try again.");
@@ -56,7 +53,7 @@ const LoginPage = () => {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/api/auth/role-redirect",
+        callbackURL: "/api/auth/role-redirect?role=editor",
       });
     } catch (err) {
       setErrorMsg("Google login failed. Please try again.");
@@ -74,21 +71,25 @@ const LoginPage = () => {
           {/* Header */}
           <div
             className="px-6 sm:px-8 py-6 text-center"
-            style={{ background: "linear-gradient(135deg, #0f172a, #1e293b)" }}
+            style={{ background: "linear-gradient(135deg, #1e3a5f, #1e293b)" }}
           >
-            <h1 className="text-2xl font-black text-white tracking-tight">TruthDesk</h1>
-            <p className="text-slate-400 text-sm mt-1">Sign in to your account</p>
+            <div className="w-10 h-10 bg-indigo-500/20 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <ClipboardCheck size={20} className="text-indigo-400" />
+            </div>
+            <h1 className="text-2xl font-black text-white tracking-tight">
+              TruthDesk
+            </h1>
+            <p className="text-slate-400 text-sm mt-1">Editor Portal</p>
           </div>
 
           <div className="px-6 sm:px-8 py-6 space-y-4">
-            {/* Error message */}
             {errorMsg && (
               <div className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-4 py-3">
                 {errorMsg}
               </div>
             )}
 
-            {/* Google Login Button */}
+            {/* Google Login */}
             <button
               onClick={handleGoogleLogin}
               disabled={googleLoading || isSubmitting}
@@ -102,14 +103,14 @@ const LoginPage = () => {
               {googleLoading ? "Connecting..." : "Continue with Google"}
             </button>
 
-            {/* Divider */}
             <div className="flex items-center gap-3">
               <div className="h-px flex-1 bg-gray-100" />
-              <span className="text-xs text-gray-400 font-medium">or sign in with email</span>
+              <span className="text-xs text-gray-400 font-medium">
+                or sign in with email
+              </span>
               <div className="h-px flex-1 bg-gray-100" />
             </div>
 
-            {/* Email/Password Form */}
             <form className="space-y-4" onSubmit={handleSubmit(handleLoginFunc)}>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -118,7 +119,7 @@ const LoginPage = () => {
                 <input
                   type="email"
                   className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-300 transition-all bg-white"
-                  placeholder="you@example.com"
+                  placeholder="your@email.com"
                   {...register("email", { required: "Email is required" })}
                 />
                 {errors.email && (
@@ -154,16 +155,16 @@ const LoginPage = () => {
                 type="submit"
                 disabled={isSubmitting || googleLoading}
                 className="w-full py-3 rounded-xl text-white text-sm font-semibold transition-all disabled:opacity-60 cursor-pointer"
-                style={{ background: "linear-gradient(135deg, #0f172a, #334155)" }}
+                style={{ background: "linear-gradient(135deg, #1e3a5f, #1e293b)" }}
               >
-                {isSubmitting ? "Signing in..." : "Sign In"}
+                {isSubmitting ? "Signing in..." : "Sign In as Editor"}
               </button>
             </form>
 
-            <p className="text-center text-sm text-gray-500">
-              Don&apos;t have an account?{" "}
-              <Link href="/register" className="font-semibold text-slate-800 hover:text-red-600 transition-colors">
-                Create one
+            <p className="text-center text-xs text-gray-400">
+              Not an editor?{" "}
+              <Link href="/login" className="font-semibold text-slate-600 hover:text-red-600 transition-colors">
+                General Login
               </Link>
             </p>
           </div>
@@ -171,6 +172,4 @@ const LoginPage = () => {
       </div>
     </div>
   );
-};
-
-export default LoginPage;
+}

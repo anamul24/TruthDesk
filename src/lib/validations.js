@@ -32,6 +32,7 @@ export const STATUS_TRANSITIONS = {
 
 // User roles
 export const USER_ROLES = {
+  USER: "user",
   ADMIN: "admin",
   EDITOR: "editor",
   JOURNALIST: "journalist",

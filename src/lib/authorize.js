@@ -36,20 +36,16 @@ export async function requireAuth() {
  */
 export async function requireRole(roles) {
   const session = await requireAuth();
-  let userRole = session.user?.role;
-
-  // Better Auth admin plugin defaults new users to "user" — treat as journalist
-  if (userRole === "user") {
-    userRole = "journalist";
-  }
+  const userRole = session.user?.role;
 
   const allowedRoles = Array.isArray(roles) ? roles : [roles];
 
   if (!userRole || !allowedRoles.includes(userRole)) {
-    // Redirect to appropriate dashboard or home
+    // Redirect to appropriate dashboard based on actual role
     if (userRole === USER_ROLES.JOURNALIST) redirect("/journalist");
     if (userRole === USER_ROLES.EDITOR) redirect("/editor");
     if (userRole === USER_ROLES.ADMIN) redirect("/admin");
+    // Regular users and unauthenticated → home
     redirect("/");
   }
 
