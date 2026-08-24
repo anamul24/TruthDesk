@@ -8,16 +8,6 @@ const NewsCard = ({ news }) => {
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
       <div className="flex justify-between items-center px-4 py-3 bg-gray-50 border-b border-gray-100">
         <div className="flex gap-2.5 items-center">
-          <div className="relative w-9 h-9 flex-shrink-0">
-            <Image
-              src={news.author?.img}
-              alt={news.author?.name}
-              fill
-              className="rounded-full object-cover"
-              sizes="36px"
-              unoptimized
-            />
-          </div>
           <div>
             <h3 className="font-semibold text-sm text-gray-800">{news.author?.name}</h3>
             <p className="text-xs text-gray-400">{news.author?.published_date}</p>

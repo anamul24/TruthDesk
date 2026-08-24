@@ -4,6 +4,7 @@ import LeftSidebar from "@/components/homepage/news/LeftSidebar";
 import RightSidebar from "@/components/homepage/news/RightSidebar";
 
 export const revalidate = 0; // Always fetch fresh from DB
+export const dynamic = 'force-dynamic';
 
 const Home = async () => {
   const news = await getNewsByCategoryId("08");

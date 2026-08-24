@@ -4,6 +4,8 @@ import React from "react";
 import LeftSidebar from "@/components/homepage/news/LeftSidebar";
 import { getCategories, getNewsByCategoryId } from "@/lib/data";
 
+export const revalidate = 0;
+export const dynamic = 'force-dynamic';
 const NewsCategoryPage = async ({ params }) => {
   const { id } = await params;
 

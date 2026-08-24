@@ -7,6 +7,9 @@ import { BsArrowLeft } from "react-icons/bs";
 import { CiBookmark, CiShare2 } from "react-icons/ci";
 import TiptapContentRenderer from "@/components/shared/TiptapContentRenderer";
 
+export const revalidate = 0;
+export const dynamic = 'force-dynamic';
+
 export const generateMetadata = async ({ params }) => {
   const { id } = await params;
   const news = await getNewsDetailsById(id);
