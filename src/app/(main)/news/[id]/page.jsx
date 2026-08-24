@@ -43,16 +43,6 @@ const NewsDetailsPage = async ({ params }) => {
         {/* Author header */}
         <div className="flex justify-between items-center px-6 py-4 bg-gray-50 border-b border-gray-100">
           <div className="flex gap-3 items-center">
-            <div className="relative w-10 h-10 flex-shrink-0">
-              <Image
-                src={news.author?.img}
-                alt={news.author?.name}
-                fill
-                className="rounded-full object-cover"
-                sizes="40px"
-                unoptimized
-              />
-            </div>
             <div>
               <h3 className="font-semibold text-sm text-gray-800">{news.author?.name}</h3>
               <p className="text-xs text-gray-400">{news.author?.published_date}</p>

@@ -21,7 +21,7 @@ function mapArticle(article) {
   let pubDate = "Just now";
   try {
     const d = article.workflow?.publishedAt || article.createdAt || new Date();
-    pubDate = format(new Date(d), "yyyy-MM-dd HH:mm:ss");
+    pubDate = format(new Date(d), "MMM d, yyyy 'at' h:mm a");
   } catch (e) {
     // fallback
   }
