@@ -5,6 +5,7 @@ import { requireAuthAPI } from "@/lib/authorize";
 import { articleUpdateSchema, ARTICLE_STATUS } from "@/lib/validations";
 import { logAuditEvent, AUDIT_ACTIONS } from "@/lib/audit";
 import slugify from "slugify";
+import { revalidatePath } from "next/cache";
 
 export async function GET(request, { params }) {
   try {
@@ -100,7 +101,18 @@ export async function PUT(request, { params }) {
     // Increment version
     updateData["revision.version"] = (article.revision?.version || 1) + 1;
 
+    // Map isTopNews to the correct DB field
+    if (typeof validatedData.isTopNews === "boolean") {
+      updateData["editorial.topNews"] = validatedData.isTopNews;
+      delete updateData.isTopNews;
+    }
+
     await collection.updateOne({ _id: new ObjectId(id) }, { $set: updateData });
+
+    // Revalidate all public pages that show article content
+    revalidatePath("/");
+    revalidatePath("/category/[id]", "page");
+    revalidatePath(`/news/${id}`);
 
     await logAuditEvent({
       userId: session.user.id,
@@ -148,6 +160,11 @@ export async function DELETE(request, { params }) {
     }
 
     await collection.deleteOne({ _id: new ObjectId(id) });
+
+    // Immediately clear the page cache so the article disappears from the portal
+    revalidatePath("/");
+    revalidatePath("/category/[id]", "page");
+    revalidatePath(`/news/${id}`);
 
     // If an editor or admin deletes another user's article, send a notification
     if (session.user.role === "editor" || session.user.role === "admin") {

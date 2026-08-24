@@ -96,7 +96,8 @@ export async function getNewsByCategoryId(category_id) {
 
     const articles = await collection
       .find(query)
-      .sort({ "workflow.publishedAt": -1, createdAt: -1 })
+      // Sort: newest published first, then newest created first
+      .sort({ "workflow.publishedAt": -1, updatedAt: -1, createdAt: -1 })
       .toArray();
       
     return articles.map(mapArticle);

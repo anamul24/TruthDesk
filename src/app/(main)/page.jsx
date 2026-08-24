@@ -3,6 +3,8 @@ import NewsCard from "@/components/homepage/news/NewsCard";
 import LeftSidebar from "@/components/homepage/news/LeftSidebar";
 import RightSidebar from "@/components/homepage/news/RightSidebar";
 
+export const revalidate = 0; // Always fetch fresh from DB
+
 const Home = async () => {
   const news = await getNewsByCategoryId("08");
 

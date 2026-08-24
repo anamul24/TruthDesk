@@ -5,6 +5,7 @@ import { requireAuthAPI } from "@/lib/authorize";
 import { ARTICLE_STATUS } from "@/lib/validations";
 import { logAuditEvent, AUDIT_ACTIONS } from "@/lib/audit";
 import { createNotification, NOTIFICATION_TYPES } from "@/lib/notifications";
+import { revalidatePath } from "next/cache";
 
 // Approve and publish: IN_REVIEW → PUBLISHED
 export async function POST(request, { params }) {
@@ -68,6 +69,10 @@ export async function POST(request, { params }) {
       fromUserName: session.user.name,
       link: `/journalist/articles/${id}`,
     });
+
+    // Revalidate public pages immediately so the article shows on the portal
+    revalidatePath("/");
+    revalidatePath("/category/[id]", "page");
 
     return NextResponse.json({ success: true, status: ARTICLE_STATUS.PUBLISHED });
   } catch (err) {

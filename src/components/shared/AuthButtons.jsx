@@ -28,39 +28,42 @@ const AuthButtons = () => {
         : "/journalist";
 
     return (
-      <div className="flex items-center gap-2 sm:gap-3">
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <div className="relative w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0">
-            <Image
-              src={user.image || userAvatar}
-              alt="User avatar"
-              fill
-              className="rounded-full object-cover"
-              sizes="32px"
-              unoptimized
-            />
-          </div>
-          <span className="text-xs sm:text-sm font-medium text-gray-700 hidden md:block max-w-[80px] truncate">
-            {user.name}
-          </span>
-        </div>
-
+      <div className="flex items-center gap-2">
         {isNewsroomUser ? (
+          // Staff: show ONLY Dashboard button — no avatar/name to save navbar space
           <Link
             href={dashboardLink}
-            className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg text-white bg-slate-800 hover:bg-slate-700 transition-colors whitespace-nowrap"
+            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg text-white bg-slate-800 hover:bg-slate-700 transition-colors whitespace-nowrap"
           >
             <LayoutDashboard size={13} />
-            <span className="hidden sm:inline">Dashboard</span>
+            <span>Dashboard</span>
           </Link>
         ) : (
-          <Link
-            href="/profile"
-            className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg text-white bg-slate-800 hover:bg-slate-700 transition-colors whitespace-nowrap"
-          >
-            <User size={13} />
-            <span className="hidden sm:inline">Profile</span>
-          </Link>
+          // Regular user: avatar + name + Profile button
+          <>
+            <div className="flex items-center gap-1.5">
+              <div className="relative w-7 h-7 flex-shrink-0">
+                <Image
+                  src={user.image || userAvatar}
+                  alt="User avatar"
+                  fill
+                  className="rounded-full object-cover"
+                  sizes="28px"
+                  unoptimized
+                />
+              </div>
+              <span className="text-xs font-medium text-gray-700 hidden md:block max-w-[72px] truncate">
+                {user.name}
+              </span>
+            </div>
+            <Link
+              href="/profile"
+              className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg text-white bg-slate-800 hover:bg-slate-700 transition-colors whitespace-nowrap"
+            >
+              <User size={13} />
+              <span className="hidden sm:inline">Profile</span>
+            </Link>
+          </>
         )}
 
         <button

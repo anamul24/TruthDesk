@@ -57,16 +57,15 @@ export async function middleware(request) {
     }
 
     const session = await sessionRes.json();
-    let userRole = session?.user?.role;
-
-    // Better Auth admin plugin defaults new users to "user" role before our hook fires.
-    // Treat "user" as "journalist" for backward compatibility.
-    if (userRole === "user") {
-      userRole = "journalist";
-    }
+    const userRole = session?.user?.role;
 
     if (!userRole) {
       return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    // Regular users have no access to newsroom routes → redirect to home
+    if (userRole === "user") {
+      return NextResponse.redirect(new URL("/", request.url));
     }
 
     // Check if user's role is allowed for this route
