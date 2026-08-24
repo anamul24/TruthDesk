@@ -14,6 +14,7 @@ import {
 import ArticleStatusBadge from "@/components/newsroom/ArticleStatusBadge";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
+import DeleteArticleButton from "@/components/newsroom/DeleteArticleButton";
 
 const TABS = [
   { label: "Pending", value: "SUBMITTED" },
@@ -184,6 +185,7 @@ export default function EditorReviewQueuePage() {
                   >
                     <Eye size={16} />
                   </Link>
+                  <DeleteArticleButton articleId={article._id} title={article.title} />
                 </div>
               </div>
             ))}

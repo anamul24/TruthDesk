@@ -133,7 +133,8 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
-    // Only authors can delete their own drafts, admins can delete anything
+    // Journalists can only delete their own drafts
+    // Editors and Admins can delete any article
     if (session.user.role === "journalist") {
       if (article.authorName !== session.user.name) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -147,6 +148,21 @@ export async function DELETE(request, { params }) {
     }
 
     await collection.deleteOne({ _id: new ObjectId(id) });
+
+    // If an editor or admin deletes another user's article, send a notification
+    if (session.user.role === "editor" || session.user.role === "admin") {
+      if (article.authorId && article.authorId !== session.user.id) {
+        const notificationsCollection = await getCollection(COLLECTIONS.NOTIFICATIONS);
+        await notificationsCollection.insertOne({
+          userId: article.authorId,
+          type: "ARTICLE_DELETED",
+          title: "Article Deleted",
+          message: `Your article "${article.title}" has been deleted by an ${session.user.role}.`,
+          isRead: false,
+          createdAt: new Date(),
+        });
+      }
+    }
 
     await logAuditEvent({
       userId: session.user.id,

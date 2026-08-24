@@ -9,7 +9,7 @@ function mapArticle(article) {
   // Handle TipTap JSON content parsing to plain text for the excerpt/details
   let detailsText = article.excerpt || "";
   if (!detailsText && article.content && article.content.content) {
-    // Very simple plain text extraction
+    // Extract plain text for card previews (300 chars max)
     detailsText = article.content.content
       .filter((node) => node.type === "paragraph" && node.content)
       .map((node) => node.content.map((textNode) => textNode.text || "").join(""))
@@ -43,8 +43,9 @@ function mapArticle(article) {
       is_todays_pick: article.editorial?.todaysPick || false,
       is_trending: article.editorial?.trending || false,
     },
-    // Adding the raw content just in case details component uses it
+    // Full Tiptap JSON content for the details page renderer
     content: article.content,
+    isTopNews: article.editorial?.topNews || false,
   };
 }
 
@@ -72,9 +73,25 @@ export async function getNewsByCategoryId(category_id) {
     const collection = await getCollection(COLLECTIONS.ARTICLES);
     let query = { status: "PUBLISHED" };
 
-    // "08" was the hardcoded ID for "All News"
     if (category_id && category_id !== "08") {
-      query.$or = [{ categoryId: category_id }];
+      const categoryCollection = await getCollection(COLLECTIONS.CATEGORIES);
+      let catQuery;
+      try {
+        catQuery = { $or: [{ _id: new ObjectId(category_id) }, { legacyId: category_id }] };
+      } catch (e) {
+        catQuery = { legacyId: category_id };
+      }
+      
+      const category = await categoryCollection.findOne(catQuery);
+      
+      if (category) {
+        query.$or = [
+          { categoryId: category._id.toString() },
+          category.legacyId ? { categoryId: category.legacyId } : null
+        ].filter(Boolean);
+      } else {
+        query.categoryId = category_id;
+      }
     }
 
     const articles = await collection
@@ -105,5 +122,20 @@ export async function getNewsDetailsById(news_id) {
   } catch (error) {
     console.error("Error fetching news details:", error);
     return null;
+  }
+}
+
+export async function getTopNews() {
+  try {
+    const collection = await getCollection(COLLECTIONS.ARTICLES);
+    const articles = await collection
+      .find({ status: "PUBLISHED", "editorial.topNews": true })
+      .sort({ "workflow.publishedAt": -1, createdAt: -1 })
+      .limit(5)
+      .toArray();
+    return articles.map(mapArticle);
+  } catch (error) {
+    console.error("Error fetching top news:", error);
+    return [];
   }
 }

@@ -64,6 +64,7 @@ export const articleSchema = z.object({
     })
     .optional()
     .default({ url: "", alt: "" }),
+  isTopNews: z.boolean().optional().default(false),
 });
 
 // Article update schema (all fields optional)
@@ -136,6 +137,7 @@ export function createArticleDocument({
   authorId,
   authorName = "",
   status = ARTICLE_STATUS.DRAFT,
+  isTopNews = false,
 }) {
   const now = new Date();
   return {
@@ -168,6 +170,7 @@ export function createArticleDocument({
       featured: false,
       trending: false,
       todaysPick: false,
+      topNews: isTopNews,
     },
     stats: {
       views: 0,

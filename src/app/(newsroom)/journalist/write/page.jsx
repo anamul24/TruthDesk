@@ -16,6 +16,7 @@ const formSchema = z.object({
   categoryId: z.string().min(1, "Category is required"),
   tags: z.string().optional(),
   excerpt: z.string().max(1000).optional(),
+  isTopNews: z.boolean().optional().default(false),
 });
 
 export default function WriteStoryPage() {
@@ -28,6 +29,8 @@ export default function WriteStoryPage() {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(formSchema),
@@ -37,6 +40,7 @@ export default function WriteStoryPage() {
       categoryId: "",
       tags: "",
       excerpt: "",
+      isTopNews: false,
     },
   });
 
@@ -97,6 +101,7 @@ export default function WriteStoryPage() {
         content,
         tags: data.tags ? data.tags.split(",").map((t) => t.trim()) : [],
         coverImage: { url: coverImageUrl, alt: data.title },
+        isTopNews: data.isTopNews || false,
         action, // 'draft' or 'submit'
       };
 
@@ -186,6 +191,29 @@ export default function WriteStoryPage() {
             {errors.categoryId && (
               <p className="text-red-500 text-xs font-medium">{errors.categoryId.message}</p>
             )}
+          </div>
+
+          {/* Top News Toggle */}
+          <div className="flex items-start gap-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-amber-800">⭐ Mark as Top News</p>
+              <p className="text-xs text-amber-600 mt-0.5">
+                Top News articles appear in the sidebar. Final decision is with the editor.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setValue("isTopNews", !watch("isTopNews"))}
+              className={`relative flex-shrink-0 w-11 h-6 rounded-full transition-colors duration-200 ${
+                watch("isTopNews") ? "bg-amber-500" : "bg-slate-200"
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${
+                  watch("isTopNews") ? "translate-x-5" : "translate-x-0"
+                }`}
+              />
+            </button>
           </div>
 
           <div className="space-y-1.5">

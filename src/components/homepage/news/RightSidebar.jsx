@@ -16,7 +16,7 @@ const RightSidebar = () => {
   };
 
   return (
-    <div className="sticky top-4 space-y-4">
+    <div className="space-y-4">
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="px-4 py-3 border-b border-gray-100" style={{ background: "linear-gradient(135deg, #0f172a, #1e293b)" }}>
           <h2 className="font-bold text-sm text-white uppercase tracking-wider">

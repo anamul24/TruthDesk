@@ -5,6 +5,7 @@ import { getCollection, COLLECTIONS } from "@/lib/db";
 import { Newspaper, Eye, Calendar } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import DeleteArticleButton from "@/components/newsroom/DeleteArticleButton";
 
 export default async function EditorPublishedPage() {
   const session = await requireRole([USER_ROLES.EDITOR, USER_ROLES.ADMIN]);
@@ -74,6 +75,7 @@ export default async function EditorPublishedPage() {
                   >
                     View
                   </Link>
+                  <DeleteArticleButton articleId={article._id.toString()} title={article.title} />
                 </div>
               </div>
             ))

@@ -39,6 +39,7 @@ export async function POST(request) {
       authorId: user.id,
       authorName: user.name,
       status,
+      isTopNews: validatedData.isTopNews || false,
     });
 
     if (status === ARTICLE_STATUS.SUBMITTED) {
