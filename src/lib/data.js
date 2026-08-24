@@ -21,7 +21,15 @@ function mapArticle(article) {
   let pubDate = "Just now";
   try {
     const d = article.workflow?.publishedAt || article.createdAt || new Date();
-    pubDate = format(new Date(d), "MMM d, yyyy 'at' h:mm a");
+    pubDate = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Dhaka',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    }).format(new Date(d)).replace(',', ' at').replace(',', '');
   } catch (e) {
     // fallback
   }
