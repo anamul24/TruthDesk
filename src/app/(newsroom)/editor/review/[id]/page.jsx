@@ -219,14 +219,22 @@ export default function EditorReviewArticlePage() {
 
   return (
     <div className="p-6 md:p-10 max-w-5xl mx-auto space-y-6">
-      {/* Back */}
-      <Link
-        href="/editor/review"
-        className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 transition-colors"
-      >
-        <ArrowLeft size={16} />
-        Back to Review Queue
-      </Link>
+      {/* Header Actions */}
+      <div className="flex items-center justify-between">
+        <Link
+          href="/editor/review"
+          className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 transition-colors"
+        >
+          <ArrowLeft size={16} />
+          Back to Review Queue
+        </Link>
+        <Link
+          href={`/editor/articles/${id}/edit`}
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+        >
+          Edit Article
+        </Link>
+      </div>
 
       {/* Article Header */}
       <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">

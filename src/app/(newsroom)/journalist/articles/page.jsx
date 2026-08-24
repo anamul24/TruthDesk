@@ -208,7 +208,7 @@ export default function JournalistArticlesPage() {
                     >
                       <Eye size={16} />
                     </Link>
-                    {["DRAFT", "REVISION_REQUESTED"].includes(
+                    {["DRAFT", "REVISION_REQUESTED", "PUBLISHED"].includes(
                       article.status
                     ) && (
                       <Link

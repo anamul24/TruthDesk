@@ -70,6 +70,12 @@ export default async function EditorPublishedPage() {
                     Published
                   </span>
                   <Link
+                    href={`/editor/articles/${article._id}/edit`}
+                    className="text-sm font-medium text-blue-600 hover:text-blue-900 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors"
+                  >
+                    Edit
+                  </Link>
+                  <Link
                     href={`/editor/review/${article._id}`}
                     className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
                   >

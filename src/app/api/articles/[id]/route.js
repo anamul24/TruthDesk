@@ -61,9 +61,9 @@ export async function PUT(request, { params }) {
       if (article.authorName !== session.user.name) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
-      if (![ARTICLE_STATUS.DRAFT, ARTICLE_STATUS.REVISION_REQUESTED].includes(article.status)) {
+      if (![ARTICLE_STATUS.DRAFT, ARTICLE_STATUS.REVISION_REQUESTED, ARTICLE_STATUS.PUBLISHED].includes(article.status)) {
         return NextResponse.json(
-          { error: "Can only edit articles in Draft or Revision Requested status" },
+          { error: "Can only edit articles in Draft, Revision Requested, or Published status" },
           { status: 400 }
         );
       }
