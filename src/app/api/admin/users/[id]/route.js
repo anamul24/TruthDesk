@@ -3,6 +3,7 @@ import { requireRoleAPI } from "@/lib/authorize";
 import { USER_ROLES } from "@/lib/validations";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { getDb } from "@/lib/db";
 
 // PATCH /api/admin/users/[id] — update user role or ban (admin only)
 export async function PATCH(request, { params }) {
@@ -56,5 +57,42 @@ export async function PATCH(request, { params }) {
   } catch (err) {
     console.error("Failed to update user:", err);
     return NextResponse.json({ error: "Failed to update user" }, { status: 500 });
+  }
+}
+
+// DELETE /api/admin/users/[id] — permanently delete a user (admin only)
+export async function DELETE(request, { params }) {
+  const { session, error } = await requireRoleAPI([USER_ROLES.ADMIN]);
+  if (error) return error;
+
+  try {
+    const { id } = await params;
+
+    // Prevent admin from deleting their own account
+    if (id === session.user.id) {
+      return NextResponse.json(
+        { error: "You cannot delete your own account" },
+        { status: 400 }
+      );
+    }
+
+    // Use Better Auth's removeUser API to cleanly delete the user
+    await auth.api.removeUser({
+      body: { userId: id },
+      headers: await headers(),
+    });
+
+    return NextResponse.json({ success: true, message: "User deleted successfully" });
+  } catch (err) {
+    console.error("Failed to delete user via Better Auth, trying direct DB:", err);
+    // Fallback: delete directly from MongoDB if Better Auth API fails
+    try {
+      const db = await getDb();
+      await db.collection("user").deleteOne({ id });
+      return NextResponse.json({ success: true, message: "User deleted" });
+    } catch (dbErr) {
+      console.error("Direct DB delete also failed:", dbErr);
+      return NextResponse.json({ error: "Failed to delete user" }, { status: 500 });
+    }
   }
 }
