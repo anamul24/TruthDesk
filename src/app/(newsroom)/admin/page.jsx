@@ -3,18 +3,10 @@ import { requireRole } from "@/lib/authorize";
 import { USER_ROLES } from "@/lib/validations";
 import { getCollection, COLLECTIONS, getDb } from "@/lib/db";
 import StatsCard from "@/components/newsroom/StatsCard";
-import {
-  Users,
-  FileText,
-  CheckCircle2,
-  ClipboardCheck,
-  Newspaper,
-  TrendingUp,
-  AlertCircle,
-} from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import ArticleStatusBadge from "@/components/newsroom/ArticleStatusBadge";
+import { Users, FileText, ClipboardCheck, Newspaper } from "lucide-react";
 
 export default async function AdminDashboard() {
   const session = await requireRole([USER_ROLES.ADMIN]);
@@ -99,19 +91,19 @@ export default async function AdminDashboard() {
           <StatsCard
             label="Total Users"
             value={totalUsers}
-            icon={Users}
+            icon="Users"
             color="indigo"
           />
           <StatsCard
             label="Journalists"
             value={journalistCount}
-            icon={FileText}
+            icon="FileText"
             color="gray"
           />
           <StatsCard
             label="Editors"
             value={editorCount}
-            icon={ClipboardCheck}
+            icon="ClipboardCheck"
             color="purple"
           />
         </div>
@@ -126,25 +118,25 @@ export default async function AdminDashboard() {
           <StatsCard
             label="Total Articles"
             value={totalArticles}
-            icon={Newspaper}
+            icon="Newspaper"
             color="gray"
           />
           <StatsCard
             label="Pending Review"
             value={pendingCount}
-            icon={AlertCircle}
+            icon="AlertCircle"
             color="orange"
           />
           <StatsCard
             label="Published"
             value={statsMap["PUBLISHED"] || 0}
-            icon={CheckCircle2}
+            icon="CheckCircle2"
             color="green"
           />
           <StatsCard
             label="In Review"
             value={statsMap["IN_REVIEW"] || 0}
-            icon={TrendingUp}
+            icon="TrendingUp"
             color="indigo"
           />
         </div>
