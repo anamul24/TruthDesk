@@ -1,39 +1,48 @@
 import React from "react";
-import Marquee from "react-fast-marquee";
+import Link from "next/link";
+import Image from "next/image";
+import { getBreakingNews } from "@/lib/data";
 
-const breakingItems = [
-  { _id: "1", title: "Global Leaders Sign Historic Climate Agreement at Geneva Summit" },
-  { _id: "2", title: "Major Earthquake Strikes Southeast Asia — Rescue Teams Deployed" },
-  { _id: "3", title: "Bangladesh Cricket Team Clinches Historic Test Series Win Against England" },
-  { _id: "4", title: "UN Security Council Passes AI Governance Resolution Unanimously" },
-  { _id: "5", title: "EU-ASEAN Free Trade Agreement Signed After Decade of Negotiations" },
-];
+const BreakingNews = async () => {
+  const items = await getBreakingNews(6);
 
-const BreakingNews = () => {
+  if (!items || items.length === 0) return null;
+
   return (
     <div className="bg-white border-y border-gray-200">
-      <div className="container mx-auto px-4 flex items-center">
-        <div className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 font-bold uppercase tracking-wider text-xs">
-          <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
-          Latest
+      <div className="container mx-auto px-4 flex items-stretch">
+        {/* Label */}
+        <div className="flex items-center gap-2 bg-red-600 text-white px-4 py-2.5 font-bold uppercase tracking-wider text-xs shrink-0">
+          <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+          <span className="hidden sm:inline">Breaking</span>
+          <span className="sm:hidden">Live</span>
         </div>
 
-        <div className="w-px h-6 bg-gray-200 mx-2 hidden sm:block"></div>
+        <div className="w-px bg-gray-200 mx-0" />
 
-        <div className="flex-1 overflow-hidden">
-          <Marquee pauseOnHover={true} speed={45} gradient={false}>
-            {breakingItems.map((item, i) => (
-              <span
-                key={item._id}
-                className="text-xs font-medium text-gray-700 mx-8 cursor-pointer hover:text-red-600 transition-colors"
+        {/* Scrolling ticker */}
+        <div className="flex-1 overflow-hidden flex items-center">
+          <div className="flex animate-[ticker_30s_linear_infinite] whitespace-nowrap hover:[animation-play-state:paused]">
+            {[...items, ...items].map((item, i) => (
+              <Link
+                key={`${item._id}-${i}`}
+                href={`/news/${item._id}`}
+                className="text-xs font-medium text-gray-700 hover:text-red-600 transition-colors mx-8 shrink-0 inline-flex items-center gap-2"
               >
-                {i > 0 && <span className="mr-8 text-gray-300">•</span>}
+                {i > 0 && <span className="text-gray-300 mr-6">•</span>}
                 {item.title}
-              </span>
+              </Link>
             ))}
-          </Marquee>
+          </div>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes ticker {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+      `}</style>
     </div>
   );
 };

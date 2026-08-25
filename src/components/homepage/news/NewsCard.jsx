@@ -1,63 +1,84 @@
-import Image from "next/image";
-import Link from "next/link";
 import React from "react";
-import { CiBookmark, CiShare2 } from "react-icons/ci";
+import Link from "next/link";
+import Image from "next/image";
+import { Clock } from "lucide-react";
 
-const NewsCard = ({ news }) => {
+/**
+ * StandardNewsCard — used in category sections (1 big + 2 small grid)
+ * variant: "large" | "small" (default: "small")
+ */
+const NewsCard = ({ news, variant = "small" }) => {
+  const isLarge = variant === "large";
+
+  const timeAgo = news.author?.published_date || "Recently";
+
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
-      <div className="flex justify-between items-center px-4 py-3 bg-gray-50 border-b border-gray-100">
-        <div className="flex gap-2.5 items-center">
-          <div>
-            <h3 className="font-semibold text-sm text-gray-800">{news.author?.name}</h3>
-            <p className="text-xs text-gray-400">{news.author?.published_date}</p>
+    <Link
+      href={`/news/${news._id}`}
+      className="group block bg-white overflow-hidden card-hover"
+      aria-label={news.title}
+    >
+      {/* Image */}
+      <div
+        className={`relative w-full overflow-hidden img-hover ${
+          isLarge ? "aspect-[16/9]" : "aspect-[16/9]"
+        }`}
+      >
+        {news.image_url ? (
+          <Image
+            src={news.image_url}
+            alt={news.image_alt || news.title}
+            fill
+            className="object-cover"
+            sizes={isLarge ? "(max-width: 768px) 100vw, 600px" : "(max-width: 768px) 100vw, 300px"}
+            unoptimized
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+            <span className="text-gray-300 text-4xl">📰</span>
           </div>
-        </div>
-        <div className="flex items-center gap-3 text-gray-400">
-          <button className="hover:text-gray-700 transition-colors" title="Share">
-            <CiShare2 className="text-lg" />
-          </button>
-          <button className="hover:text-gray-700 transition-colors" title="Bookmark">
-            <CiBookmark className="text-lg" />
-          </button>
-        </div>
+        )}
+
+        {/* Category overlay badge */}
+        {news.categoryName && (
+          <div className="absolute top-3 left-3">
+            <span className="bg-red-600 text-white text-[10px] font-bold uppercase tracking-wide px-2 py-0.5">
+              {news.categoryName}
+            </span>
+          </div>
+        )}
       </div>
 
-      <div className="relative w-full aspect-[16/9]">
-        <Image
-          src={news.image_url}
-          alt={news.title}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, 600px"
-          unoptimized
-        />
-      </div>
-
-      <div className="p-4">
-        <h2 className="font-bold text-base text-gray-900 leading-snug mb-2 hover:text-red-600 transition-colors">
-          {news.title}
-        </h2>
-        <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed mb-4">
-          {news.details}
-        </p>
-
-        <Link
-          href={`/news/${news._id}`}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-red-600 hover:text-red-700 transition-colors group"
+      {/* Content */}
+      <div className={`pt-3 ${isLarge ? "pb-2" : "pb-1"}`}>
+        <h3
+          className={`font-bold text-gray-900 leading-snug group-hover:text-red-600 transition-colors ${
+            isLarge ? "text-lg md:text-xl" : "text-sm"
+          }`}
         >
-          Read more
-          <svg
-            className="w-4 h-4 group-hover:translate-x-0.5 transition-transform"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </Link>
+          {news.title}
+        </h3>
+
+        {isLarge && news.excerpt && (
+          <p className="text-sm text-gray-500 mt-2 line-clamp-2 leading-relaxed">
+            {news.excerpt}
+          </p>
+        )}
+
+        <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
+          <span className="font-medium text-gray-600">{news.author?.name}</span>
+          {timeAgo && (
+            <>
+              <span>·</span>
+              <span className="flex items-center gap-1">
+                <Clock size={10} />
+                {timeAgo}
+              </span>
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

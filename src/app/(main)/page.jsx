@@ -1,46 +1,99 @@
-import { getNewsByCategoryId } from "@/lib/data";
-import NewsCard from "@/components/homepage/news/NewsCard";
-import LeftSidebar from "@/components/homepage/news/LeftSidebar";
-import RightSidebar from "@/components/homepage/news/RightSidebar";
+import {
+  getFeaturedArticles,
+  getLatestArticles,
+  getMostReadArticles,
+  getEditorsPicks,
+  getActiveCategoriesWithCount,
+  getArticlesByCategory,
+  getTrendingTopics,
+} from "@/lib/data";
+import HeroSection from "@/components/homepage/HeroSection";
+import LatestNewsSection from "@/components/homepage/LatestNewsSection";
+import EditorsPicksSection from "@/components/homepage/EditorsPicksSection";
+import CategorySection from "@/components/homepage/CategorySection";
+import TrendingTopics from "@/components/homepage/TrendingTopics";
+import NewsletterSection from "@/components/homepage/NewsletterSection";
 
-export const revalidate = 0; // Always fetch fresh from DB
-export const dynamic = 'force-dynamic';
+export const revalidate = 60; // ISR: revalidate every 60 seconds
+export const dynamic = "force-dynamic";
+
+export const metadata = {
+  title: "TruthDesk — Bangladesh's Trusted News Source",
+  description:
+    "TruthDesk delivers accurate, independent news from Bangladesh and around the world. Politics, sports, technology, entertainment and more.",
+};
+
+// How many category sections to show on homepage
+const MAX_CATEGORY_SECTIONS = 4;
 
 const Home = async () => {
-  const news = await getNewsByCategoryId("08");
+  // Parallel data fetching for performance
+  const [
+    featuredArticles,
+    latestArticles,
+    mostReadArticles,
+    editorsPicks,
+    activeCategories,
+    trendingTopics,
+  ] = await Promise.all([
+    getFeaturedArticles(3),
+    getLatestArticles(6),
+    getMostReadArticles(5),
+    getEditorsPicks(3),
+    getActiveCategoriesWithCount(3), // only categories with 3+ articles
+    getTrendingTopics(10),
+  ]);
+
+  // Pick top categories for section display (skip any already shown in hero)
+  const featuredIds = new Set(featuredArticles.map((a) => a._id));
+  const categoryArticlesMap = await Promise.all(
+    activeCategories
+      .slice(0, MAX_CATEGORY_SECTIONS)
+      .map(async (cat) => {
+        const articles = await getArticlesByCategory(cat.category_id, 3);
+        return { category: cat, articles };
+      })
+  );
 
   return (
-    // Fixed-height viewport minus sticky navbar (~48px) — each column scrolls independently
-    <div
-      className="container mx-auto grid grid-cols-12 gap-0 px-0 sm:px-4"
-      style={{ height: "calc(100vh - 48px)" }}
-    >
-      {/* Left sidebar — independently scrollable */}
-      <div className="col-span-3 hidden lg:flex flex-col overflow-y-auto px-0 pr-4 py-6 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
-        <LeftSidebar />
-      </div>
+    <main>
+      {/* ─── Hero / Top Stories ────────────────────────── */}
+      <HeroSection articles={featuredArticles} />
 
-      {/* Main news feed — independently scrollable */}
-      <div className="col-span-12 lg:col-span-6 overflow-y-auto px-4 py-6 border-x border-gray-100 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
-        <h2 className="font-bold text-xl text-gray-800 border-b-2 border-red-500 pb-2 mb-6">
-          Latest News
-        </h2>
-        <div className="space-y-6 pb-10">
-          {news.length > 0 ? (
-            news.map((n) => <NewsCard key={n._id} news={n} />)
-          ) : (
-            <h2 className="font-bold text-4xl text-center my-7">
-              No news found!
-            </h2>
-          )}
-        </div>
-      </div>
+      {/* Divider */}
+      <div className="border-t border-gray-100" />
 
-      {/* Right sidebar — independently scrollable */}
-      <div className="col-span-3 hidden lg:flex flex-col overflow-y-auto pl-4 py-6 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
-        <RightSidebar />
-      </div>
-    </div>
+      {/* ─── Latest News + Most Read ───────────────────── */}
+      <LatestNewsSection
+        latestArticles={latestArticles}
+        mostReadArticles={mostReadArticles}
+      />
+
+      {/* ─── Editor's Picks ────────────────────────────── */}
+      {editorsPicks.length > 0 && (
+        <EditorsPicksSection articles={editorsPicks} />
+      )}
+
+      {/* ─── Category Sections ─────────────────────────── */}
+      {categoryArticlesMap.map(({ category, articles }) =>
+        articles.length >= 1 ? (
+          <CategorySection
+            key={category.category_id}
+            categoryName={category.category_name}
+            categoryId={category.category_id}
+            articles={articles}
+          />
+        ) : null
+      )}
+
+      {/* ─── Trending Topics ───────────────────────────── */}
+      {trendingTopics.length > 0 && (
+        <TrendingTopics topics={trendingTopics} />
+      )}
+
+      {/* ─── Newsletter ────────────────────────────────── */}
+      <NewsletterSection />
+    </main>
   );
 };
 
