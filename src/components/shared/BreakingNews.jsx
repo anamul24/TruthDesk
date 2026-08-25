@@ -37,12 +37,6 @@ const BreakingNews = async () => {
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes ticker {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-      `}</style>
     </div>
   );
 };

@@ -251,3 +251,12 @@ body {
   outline-offset: 3px;
   border-radius: 2px;
 }
+
+/* ============================================================
+   TICKER ANIMATION
+   ============================================================ */
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}

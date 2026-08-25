@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { playfair } from "@/app/layout";
-import { Facebook, Youtube, Instagram, Twitter } from "lucide-react";
+import { FaFacebook, FaYoutube, FaInstagram, FaTwitter } from "react-icons/fa";
 
 const footerLinks = {
   News: [
@@ -30,10 +30,10 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: Facebook, label: "Facebook", href: "https://facebook.com", color: "hover:text-blue-400" },
-  { icon: Youtube, label: "YouTube", href: "https://youtube.com", color: "hover:text-red-400" },
-  { icon: Instagram, label: "Instagram", href: "https://instagram.com", color: "hover:text-pink-400" },
-  { icon: Twitter, label: "X / Twitter", href: "https://twitter.com", color: "hover:text-sky-400" },
+  { icon: FaFacebook, label: "Facebook", href: "https://facebook.com", color: "hover:text-blue-400" },
+  { icon: FaYoutube, label: "YouTube", href: "https://youtube.com", color: "hover:text-red-400" },
+  { icon: FaInstagram, label: "Instagram", href: "https://instagram.com", color: "hover:text-pink-400" },
+  { icon: FaTwitter, label: "X / Twitter", href: "https://twitter.com", color: "hover:text-sky-400" },
 ];
 
 const Footer = () => {
