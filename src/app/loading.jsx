@@ -1,12 +1,10 @@
 import React from "react";
+import { Loader2 } from "lucide-react";
 
-const LoadingPage = () => {
+export default function GlobalLoading() {
   return (
-    <div className="flex h-[85vh] items-center justify-center">
-      Global loading
-      <span className="loading loading-dots loading-xl"></span>
+    <div className="min-h-[50vh] flex items-center justify-center">
+      <Loader2 size={32} className="animate-spin text-slate-400" />
     </div>
   );
-};
-
-export default LoadingPage;
+}

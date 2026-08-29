@@ -18,6 +18,7 @@ import {
   ClipboardCheck,
   Archive,
   Settings,
+  MailCheck,
 } from "lucide-react";
 import userAvatar from "@/assets/user.png";
 
@@ -54,6 +55,7 @@ const EDITOR_NAV = [
 const ADMIN_NAV = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Users", href: "/admin/users", icon: User },
+  { label: "Invitations", href: "/admin/invitations", icon: MailCheck },
   { label: "Articles", href: "/admin/articles", icon: FileText },
   { label: "Categories", href: "/admin/categories", icon: Archive },
   { label: "Profile", href: "/admin/profile", icon: Settings },

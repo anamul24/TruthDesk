@@ -18,9 +18,33 @@ export const generateMetadata = async ({ params }) => {
     return { title: "News Not Found", description: "This article does not exist." };
   }
 
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL || "https://truthdesk.vercel.app"}/news/${id}`;
+
   return {
     title: news.title,
-    description: news.details?.slice(0, 160),
+    description: news.excerpt || news.details?.slice(0, 160),
+    openGraph: {
+      title: news.title,
+      description: news.excerpt || news.details?.slice(0, 160),
+      url,
+      type: "article",
+      publishedTime: news.workflow?.publishedAt || news.author?.published_date,
+      authors: [news.author?.name],
+      images: [
+        {
+          url: news.cover_image?.url || news.image_url,
+          width: 1200,
+          height: 630,
+          alt: news.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: news.title,
+      description: news.excerpt || news.details?.slice(0, 160),
+      images: [news.cover_image?.url || news.image_url],
+    },
   };
 };
 
@@ -33,14 +57,34 @@ const NewsDetailsPage = async ({ params }) => {
   }
 
   return (
-    <div className="container mx-auto px-4 my-10 max-w-3xl">
-      <Link
-        href="/"
-        className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-red-600 transition-colors mb-6"
-      >
-        <BsArrowLeft />
-        Back to Home
-      </Link>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "NewsArticle",
+            headline: news.title,
+            image: [news.cover_image?.url || news.image_url],
+            datePublished: news.workflow?.publishedAt || news.author?.published_date,
+            dateModified: news.updatedAt || news.workflow?.publishedAt,
+            author: [
+              {
+                "@type": "Person",
+                name: news.author?.name || news.authorName,
+              },
+            ],
+          }),
+        }}
+      />
+      <div className="container mx-auto px-4 my-10 max-w-3xl">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-red-600 transition-colors mb-6"
+        >
+          <BsArrowLeft />
+          Back to Home
+        </Link>
 
       <article className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         {/* Author header */}
@@ -121,7 +165,8 @@ const NewsDetailsPage = async ({ params }) => {
           </div>
         </div>
       </article>
-    </div>
+      </div>
+    </>
   );
 };
 

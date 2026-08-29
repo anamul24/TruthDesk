@@ -15,13 +15,8 @@ export async function GET(request) {
 
     const collection = await getCollection(COLLECTIONS.NOTIFICATIONS);
 
-    // Get notifications for this user OR broadcast notifications for their role
-    const query = {
-      $or: [
-        { userId: session.user.id },
-        { userId: session.user.role + "s" }, // e.g., "editors" broadcast
-      ],
-    };
+    // Get notifications for this user
+    const query = { userId: session.user.id };
 
     const [notifications, total, unreadCount] = await Promise.all([
       collection.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).toArray(),
@@ -54,29 +49,38 @@ export async function PUT(request) {
     if (error) return error;
 
     const body = await request.json();
-    const { notificationIds, markAllRead } = body;
+    // Support: single notificationId (string), array notificationIds, or markAllRead
+    const { notificationIds, notificationId, markAllRead } = body;
 
     const collection = await getCollection(COLLECTIONS.NOTIFICATIONS);
 
     if (markAllRead) {
       await collection.updateMany(
-        {
-          $or: [
-            { userId: session.user.id },
-            { userId: session.user.role + "s" },
-          ],
-          read: false,
-        },
+        { userId: session.user.id, read: false },
         { $set: { read: true } }
       );
+    } else if (notificationId) {
+      // Single notification ID (sent by NotificationBell dropdown)
+      const { ObjectId } = await import("mongodb");
+      try {
+        await collection.updateOne(
+          { _id: new ObjectId(notificationId), userId: session.user.id },
+          { $set: { read: true } }
+        );
+      } catch {
+        // Invalid ObjectId format — silently skip
+      }
     } else if (notificationIds && notificationIds.length > 0) {
       const { ObjectId } = await import("mongodb");
-      await collection.updateMany(
-        {
-          _id: { $in: notificationIds.map((id) => new ObjectId(id)) },
-        },
-        { $set: { read: true } }
-      );
+      const validIds = notificationIds.flatMap((id) => {
+        try { return [new ObjectId(id)]; } catch { return []; }
+      });
+      if (validIds.length > 0) {
+        await collection.updateMany(
+          { _id: { $in: validIds }, userId: session.user.id },
+          { $set: { read: true } }
+        );
+      }
     }
 
     return NextResponse.json({ success: true });

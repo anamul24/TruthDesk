@@ -43,6 +43,38 @@ export const COLLECTIONS = {
   EDITOR_COMMENTS: "editorComments",
   NOTIFICATIONS: "notifications",
   AUDIT_LOGS: "auditLogs",
+  ASSIGNMENTS: "assignments",
+  PITCHES: "pitches",
+  INVITATIONS: "invitations",
 };
+
+export async function initDbIndexes() {
+  const db = await getDb();
+  
+  // articles
+  await db.collection(COLLECTIONS.ARTICLES).createIndex({ status: 1, createdAt: -1 });
+  await db.collection(COLLECTIONS.ARTICLES).createIndex({ authorId: 1, status: 1 });
+  await db.collection(COLLECTIONS.ARTICLES).createIndex({ categoryId: 1, status: 1 });
+  await db.collection(COLLECTIONS.ARTICLES).createIndex({ "workflow.publishedAt": -1 });
+  await db.collection(COLLECTIONS.ARTICLES).createIndex({ slug: 1 }, { unique: true });
+  await db.collection(COLLECTIONS.ARTICLES).createIndex({ "editorial.topNews": 1 });
+
+  // notifications  
+  await db.collection(COLLECTIONS.NOTIFICATIONS).createIndex({ userId: 1, read: 1, createdAt: -1 });
+
+  // assignments
+  await db.collection(COLLECTIONS.ASSIGNMENTS).createIndex({ journalistId: 1, status: 1 });
+  await db.collection(COLLECTIONS.ASSIGNMENTS).createIndex({ editorId: 1, status: 1 });
+
+  // pitches
+  await db.collection(COLLECTIONS.PITCHES).createIndex({ journalistId: 1, status: 1 });
+
+  // invitations
+  await db.collection(COLLECTIONS.INVITATIONS).createIndex({ tokenHash: 1 }, { unique: true });
+  await db.collection(COLLECTIONS.INVITATIONS).createIndex({ email: 1 });
+  await db.collection(COLLECTIONS.INVITATIONS).createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+
+  console.log("Database indexes initialized.");
+}
 
 export { clientPromise };

@@ -88,8 +88,10 @@ export async function GET(request) {
     
     // If journalist, only show their own articles
     if (session.user.role === "journalist") {
-      // Note: adjust this depending on how you store author ID
-      query.authorName = session.user.name; 
+      query.$or = [
+        { authorId: session.user.id },
+        { authorName: session.user.name }
+      ];
     }
 
     if (status) {

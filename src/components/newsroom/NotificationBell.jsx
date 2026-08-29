@@ -15,9 +15,22 @@ export default function NotificationBell({ role }) {
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000); // Poll every 30s
-    return () => clearInterval(interval);
   }, []);
+
+  // Use SSE for real-time updates
+  const { useSSE } = require("@/hooks/useSSE");
+  useSSE((event) => {
+    if (event.type === "notification_created") {
+      setNotifications((prev) => [event.payload, ...prev].slice(0, 10));
+      setUnreadCount((prev) => prev + 1);
+      
+      // Optionally show a toast for high priority ones or generally
+      if (typeof window !== "undefined") {
+        const { toast } = require("sonner");
+        toast.info(event.payload.title, { description: event.payload.message });
+      }
+    }
+  }, ["notification_created"]);
 
   useEffect(() => {
     function handleClickOutside(e) {

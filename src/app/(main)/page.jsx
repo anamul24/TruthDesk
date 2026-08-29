@@ -36,7 +36,7 @@ const Home = async () => {
     activeCategories,
     trendingTopics,
   ] = await Promise.all([
-    getFeaturedArticles(3),
+    getFeaturedArticles(5),
     getLatestArticles(6),
     getMostReadArticles(5),
     getEditorsPicks(3),

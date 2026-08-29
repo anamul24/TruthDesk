@@ -15,11 +15,8 @@ export default async function JournalistDashboard() {
 
   // Fetch stats and recent articles from DB
   const collection = await getCollection(COLLECTIONS.ARTICLES);
-  const authorId = user?.id; // In Better Auth, user ID is typically under user.id
-  
-  // Note: authorId might need to be linked if you use email instead
-  // Assuming authorName for now if ID is not populated on legacy items
-  const query = { authorName: user?.name }; // Fallback query for now
+  const authorId = user?.id;
+  const query = { $or: [{ authorId: user?.id }, { authorName: user?.name }] };
 
   // Temporary aggregation for stats (using authorName for this demo since we don't have proper authorIds yet)
   const stats = await collection.aggregate([

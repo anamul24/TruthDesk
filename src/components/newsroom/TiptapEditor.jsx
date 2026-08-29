@@ -8,6 +8,7 @@ import Link from "@tiptap/extension-link";
 import TiptapImage from "@tiptap/extension-image";
 import TextAlign from "@tiptap/extension-text-align";
 import Placeholder from "@tiptap/extension-placeholder";
+import { toast } from "sonner";
 import {
   Bold,
   Italic,
@@ -97,10 +98,38 @@ export default function TiptapEditor({ content, onChange, placeholder = "Start w
 
   const addImage = useCallback(() => {
     if (!editor) return;
-    const url = window.prompt("Enter image URL:");
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run();
-    }
+    
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    
+    input.onchange = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // Using toast for progress (assumes sonner is imported, we'll add it)
+      const toastId = toast.loading("Uploading image...");
+
+      try {
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) throw new Error("Upload failed");
+
+        const data = await res.json();
+        editor.chain().focus().setImage({ src: data.url }).run();
+        toast.success("Image uploaded successfully", { id: toastId });
+      } catch (error) {
+        toast.error("Failed to upload image", { id: toastId });
+      }
+    };
+    
+    input.click();
   }, [editor]);
 
   if (!editor) {
