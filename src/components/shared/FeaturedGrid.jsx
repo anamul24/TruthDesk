@@ -86,46 +86,32 @@ export default function FeaturedGrid({ articles = [] }) {
             <div key={article._id} className="flex-1 flex flex-col justify-center">
               <Link
                 href={`/news/${article._id}`}
-                className="group flex gap-4 lg:block"
+                className="group flex flex-col"
                 aria-label={article.title}
               >
-                {/* Thumbnail - hidden on desktop if we want text only, or show a small one */}
-                <div className="relative w-1/3 lg:w-full aspect-[16/9] overflow-hidden img-hover lg:mb-3 rounded-lg flex-shrink-0">
-                  {article.cover_image?.url || article.image_url ? (
-                    <Image
-                      src={article.cover_image?.url || article.image_url}
-                      alt={article.cover_image?.alt || article.image_alt || article.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 1024px) 33vw, 300px"
-                      unoptimized
-                    />
-                  ) : (
-                    <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-                      <span className="text-gray-300 text-xl lg:text-3xl">📰</span>
-                    </div>
-                  )}
-                </div>
+                {article.categoryName && (
+                  <span className="category-badge text-[10px] mb-2 block w-fit">
+                    {article.categoryName}
+                  </span>
+                )}
 
-                <div className="flex-1">
-                  {article.categoryName && (
-                    <span className="category-badge text-[10px] mb-1 block">
-                      {article.categoryName}
-                    </span>
-                  )}
+                <h3 className="font-bold text-base md:text-lg text-gray-900 leading-snug group-hover:text-red-600 transition-colors line-clamp-3">
+                  {article.title}
+                </h3>
 
-                  <h3 className="font-bold text-sm md:text-base text-gray-900 leading-snug group-hover:text-red-600 transition-colors line-clamp-3">
-                    {article.title}
-                  </h3>
+                {article.excerpt && (
+                  <p className="text-gray-500 text-sm mt-2 line-clamp-2">
+                    {article.excerpt}
+                  </p>
+                )}
 
-                  <div className="flex items-center gap-2 mt-2 text-[11px] text-gray-400">
-                    <span className="font-medium text-gray-500">{article.authorName || article.author?.name}</span>
-                  </div>
+                <div className="flex items-center gap-2 mt-3 text-xs text-gray-400">
+                  <span className="font-medium text-gray-500">{article.authorName || article.author?.name}</span>
                 </div>
               </Link>
 
               {i < smallArticles.length - 1 && (
-                <div className="border-b border-gray-100 mt-6 lg:hidden" />
+                <div className="border-b border-gray-100 mt-6" />
               )}
             </div>
           ))}

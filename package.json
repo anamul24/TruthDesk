@@ -19,6 +19,7 @@
     "@better-auth/mongo-adapter": "^1.6.30",
     "@better-auth/utils": "^0.4.2",
     "@hookform/resolvers": "^5.9.1",
+    "@tailwindcss/typography": "^0.5.20",
     "@tiptap/extension-image": "^3.30.0",
     "@tiptap/extension-link": "^3.30.0",
     "@tiptap/extension-placeholder": "^3.30.0",

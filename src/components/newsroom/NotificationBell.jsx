@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { Bell } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import { useSSE } from "@/hooks/useSSE";
+import { toast } from "sonner";
 
 export default function NotificationBell({ role }) {
   const [notifications, setNotifications] = useState([]);
@@ -18,17 +20,13 @@ export default function NotificationBell({ role }) {
   }, []);
 
   // Use SSE for real-time updates
-  const { useSSE } = require("@/hooks/useSSE");
   useSSE((event) => {
     if (event.type === "notification_created") {
       setNotifications((prev) => [event.payload, ...prev].slice(0, 10));
       setUnreadCount((prev) => prev + 1);
       
-      // Optionally show a toast for high priority ones or generally
-      if (typeof window !== "undefined") {
-        const { toast } = require("sonner");
-        toast.info(event.payload.title, { description: event.payload.message });
-      }
+      // Optionally show a toast
+      toast.info(event.payload.title, { description: event.payload.message });
     }
   }, ["notification_created"]);
 

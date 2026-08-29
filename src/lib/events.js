@@ -6,9 +6,13 @@
 
 import { EventEmitter } from "events";
 
-// Module-level singleton — shared across requests in the same process
-const emitter = new EventEmitter();
-emitter.setMaxListeners(200); // Support many concurrent clients
+// Module-level singleton — shared across requests in the same process.
+// Use globalThis in Next.js to preserve it across hot reloads in dev mode.
+const emitter = globalThis.newsroomEmitter || new EventEmitter();
+if (!globalThis.newsroomEmitter) {
+  emitter.setMaxListeners(200); // Support many concurrent clients
+  globalThis.newsroomEmitter = emitter;
+}
 
 export const NEWSROOM_EVENTS = {
   NEW_SUBMISSION: "new_submission",       // journalist submitted article
