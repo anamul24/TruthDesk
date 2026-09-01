@@ -159,7 +159,7 @@ const NewsDetailsPage = async ({ params }) => {
           
           {/* Left Sidebar (Desktop Only) */}
           <aside className="hidden lg:block lg:col-span-3">
-            <div className="sticky top-24">
+            <div className="sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto pr-2 custom-scrollbar pb-6">
               <h4 className="font-bold text-sm uppercase tracking-wider text-gray-900 mb-5 border-b pb-2 border-gray-200">
                 More in {news.categoryName || `This Category`}
               </h4>
@@ -278,7 +278,7 @@ const NewsDetailsPage = async ({ params }) => {
 
           {/* Right Sidebar (Desktop Only) */}
           <aside className="hidden lg:block lg:col-span-3">
-            <div className="sticky top-24 space-y-10">
+            <div className="sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto pr-2 custom-scrollbar pb-6 space-y-10">
               {otherCategoriesData.length > 0 ? (
                 otherCategoriesData.map((catData) => (
                   <div key={catData._id}>

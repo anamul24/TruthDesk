@@ -78,9 +78,9 @@ export default function ShareButton({ title, text, url }) {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <>
       <button 
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen(true)}
         className={`p-2 rounded-full transition-colors ${isOpen ? "bg-gray-100 text-gray-900" : "hover:bg-gray-50 text-gray-400 hover:text-gray-700"}`}
         title="Share this article"
       >
@@ -88,53 +88,66 @@ export default function ShareButton({ title, text, url }) {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 z-50 overflow-hidden transform origin-top-right transition-all">
-          <div className="px-4 py-3 border-b border-gray-50 bg-gray-50/50">
-            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Share Article</h4>
-          </div>
-          <div className="p-2 space-y-1">
-            {navigator.share && (
-              <button
-                onClick={handleNativeShare}
-                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors font-medium"
-              >
-                <div className="w-6 h-6 rounded-md bg-gray-100 flex items-center justify-center text-gray-600">
-                  <CiShare2 size={16} />
-                </div>
-                Share via Device...
-              </button>
-            )}
-            
-            {socialLinks.map((social) => (
-              <a
-                key={social.name}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div 
+            ref={dropdownRef}
+            className="w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+          >
+            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+              <h4 className="font-semibold text-gray-800">Share Article</h4>
+              <button 
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                className="p-1 rounded-md hover:bg-gray-200 text-gray-500 transition-colors"
               >
-                <div className={`w-6 h-6 rounded-md flex items-center justify-center ${social.color}`}>
-                  {social.icon}
-                </div>
-                {social.name}
-              </a>
-            ))}
-            
-            <div className="h-px bg-gray-100 my-1 mx-2" />
-            
-            <button
-              onClick={handleCopyLink}
-              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors font-medium"
-            >
-              <div className="w-6 h-6 rounded-md bg-gray-100 flex items-center justify-center text-gray-600">
-                <FaLink size={12} />
+                ✕
+              </button>
+            </div>
+            <div className="p-3 space-y-1">
+              {navigator.share && (
+                <button
+                  onClick={handleNativeShare}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-xl transition-colors font-medium"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-600">
+                    <CiShare2 size={18} />
+                  </div>
+                  Share via Device...
+                </button>
+              )}
+              
+              <div className="grid grid-cols-2 gap-2 p-1">
+                {socialLinks.map((social) => (
+                  <a
+                    key={social.name}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setIsOpen(false)}
+                    className="flex flex-col items-center justify-center gap-2 p-3 text-xs text-gray-700 hover:bg-gray-50 rounded-xl transition-colors font-medium border border-gray-100"
+                  >
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${social.color} shadow-sm`}>
+                      {social.icon}
+                    </div>
+                    {social.name}
+                  </a>
+                ))}
               </div>
-              Copy Link
-            </button>
+              
+              <div className="h-px bg-gray-100 my-2 mx-2" />
+              
+              <button
+                onClick={handleCopyLink}
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-xl transition-colors font-medium"
+              >
+                <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-600">
+                  <FaLink size={14} />
+                </div>
+                Copy Link
+              </button>
+            </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
