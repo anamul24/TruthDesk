@@ -19,6 +19,8 @@ import {
   Archive,
   Settings,
   MailCheck,
+  Radio,
+  Star,
 } from "lucide-react";
 import userAvatar from "@/assets/user.png";
 
@@ -48,6 +50,8 @@ const EDITOR_NAV = [
   { label: "Dashboard", href: "/editor", icon: LayoutDashboard },
   { label: "Review Queue", href: "/editor/review", icon: ClipboardCheck },
   { label: "Published", href: "/editor/published", icon: Newspaper },
+  { label: "Breaking News", href: "/editor/breaking-news", icon: Radio },
+  { label: "Top News", href: "/editor/top-news", icon: Star },
   { label: "Notifications", href: "/editor/notifications", icon: Bell },
   { label: "Profile", href: "/editor/profile", icon: User },
 ];
@@ -58,6 +62,7 @@ const ADMIN_NAV = [
   { label: "Invitations", href: "/admin/invitations", icon: MailCheck },
   { label: "Articles", href: "/admin/articles", icon: FileText },
   { label: "Categories", href: "/admin/categories", icon: Archive },
+  { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { label: "Profile", href: "/admin/profile", icon: Settings },
 ];
 

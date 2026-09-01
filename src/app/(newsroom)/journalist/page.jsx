@@ -2,7 +2,7 @@ import React from "react";
 import { getSession, requireRole } from "@/lib/authorize";
 import { USER_ROLES } from "@/lib/validations";
 import StatsCard from "@/components/newsroom/StatsCard";
-import { FileText } from "lucide-react";
+import { FileText, Eye, BarChart3, TrendingUp, ArrowRight } from "lucide-react";
 import { getCollection, COLLECTIONS } from "@/lib/db";
 import ArticleStatusBadge from "@/components/newsroom/ArticleStatusBadge";
 import Link from "next/link";
@@ -35,6 +35,14 @@ export default async function JournalistDashboard() {
     .limit(5)
     .toArray();
 
+  // Performance quick stats (published articles + views)
+  const publishedArticles = await collection
+    .find({ authorId, status: "PUBLISHED" })
+    .project({ "stats.views": 1, title: 1 })
+    .toArray();
+  const totalViews = publishedArticles.reduce((sum, a) => sum + (a.stats?.views || 0), 0);
+  const avgViews = publishedArticles.length > 0 ? Math.round(totalViews / publishedArticles.length) : 0;
+
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good morning";
@@ -64,31 +72,38 @@ export default async function JournalistDashboard() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard
-          label="Drafts"
-          value={statsMap["DRAFT"] || 0}
-          icon="FileText"
-          color="gray"
-        />
-        <StatsCard
-          label="In Review"
-          value={statsMap["SUBMITTED"] || 0}
-          icon="ClipboardCheck"
-          color="indigo"
-        />
-        <StatsCard
-          label="Revision Required"
-          value={statsMap["REVISION_REQUESTED"] || 0}
-          icon="AlertCircle"
-          color="orange"
-        />
-        <StatsCard
-          label="Published"
-          value={statsMap["PUBLISHED"] || 0}
-          icon="CheckCircle2"
-          color="green"
-        />
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <StatsCard label="Drafts" value={statsMap["DRAFT"] || 0} icon="FileText" color="gray" />
+        <StatsCard label="In Review" value={statsMap["SUBMITTED"] || 0} icon="ClipboardCheck" color="indigo" />
+        <StatsCard label="Revision" value={statsMap["REVISION_REQUESTED"] || 0} icon="AlertCircle" color="orange" />
+        <StatsCard label="Published" value={statsMap["PUBLISHED"] || 0} icon="CheckCircle2" color="green" />
+      </div>
+
+      {/* Performance Quick Panel */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-semibold text-slate-800 flex items-center gap-2">
+            <BarChart3 size={16} className="text-blue-500" />
+            Performance Overview
+          </h2>
+          <Link href="/journalist/performance" className="text-xs font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1">
+            Full Analytics <ArrowRight size={12} />
+          </Link>
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center">
+            <p className="text-2xl font-black text-slate-900">{totalViews.toLocaleString()}</p>
+            <p className="text-xs text-slate-500 mt-1 flex items-center justify-center gap-1"><Eye size={10} />Total Views</p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl font-black text-slate-900">{statsMap["PUBLISHED"] || 0}</p>
+            <p className="text-xs text-slate-500 mt-1 flex items-center justify-center gap-1"><FileText size={10} />Published</p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl font-black text-slate-900">{avgViews.toLocaleString()}</p>
+            <p className="text-xs text-slate-500 mt-1 flex items-center justify-center gap-1"><TrendingUp size={10} />Avg Views</p>
+          </div>
+        </div>
       </div>
 
       {/* Recent Activity */}

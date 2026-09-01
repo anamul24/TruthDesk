@@ -6,6 +6,7 @@ import React from "react";
 import { BsArrowLeft } from "react-icons/bs";
 import { CiBookmark, CiShare2 } from "react-icons/ci";
 import TiptapContentRenderer from "@/components/shared/TiptapContentRenderer";
+import ArticleViewTracker from "@/components/homepage/news/ArticleViewTracker";
 
 export const revalidate = 0;
 export const dynamic = 'force-dynamic';
@@ -58,6 +59,8 @@ const NewsDetailsPage = async ({ params }) => {
 
   return (
     <>
+      {/* Track view count — client-side, session-based dedup */}
+      <ArticleViewTracker articleId={news._id} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
