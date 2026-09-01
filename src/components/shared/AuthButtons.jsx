@@ -66,15 +66,17 @@ const AuthButtons = () => {
           </>
         )}
 
-        <button
-          className="text-xs font-medium px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors whitespace-nowrap"
-          onClick={async () => {
-            await authClient.signOut();
-            window.location.href = "/";
-          }}
-        >
-          Sign Out
-        </button>
+        {!isNewsroomUser && (
+          <button
+            className="text-xs font-medium px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors whitespace-nowrap"
+            onClick={async () => {
+              await authClient.signOut();
+              window.location.href = "/";
+            }}
+          >
+            Sign Out
+          </button>
+        )}
       </div>
     );
   }

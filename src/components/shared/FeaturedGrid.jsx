@@ -23,7 +23,7 @@ export default function FeaturedGrid({ articles = [] }) {
           aria-label={main.title}
         >
           {/* Image */}
-          <div className="relative w-full aspect-[16/9] lg:aspect-[4/3] overflow-hidden img-hover mb-4 rounded-xl">
+          <div className="relative w-full aspect-[16/9] lg:h-[420px] overflow-hidden img-hover mb-4 rounded-xl">
             {main.cover_image?.url || main.image_url ? (
               <Image
                 src={main.cover_image?.url || main.image_url}

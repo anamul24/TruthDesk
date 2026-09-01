@@ -21,8 +21,10 @@ import {
   MailCheck,
   Radio,
   Star,
+  LogOut,
 } from "lucide-react";
 import userAvatar from "@/assets/user.png";
+import { authClient } from "@/lib/auth-client";
 
 const JOURNALIST_NAV = [
   { label: "Dashboard", href: "/journalist", icon: LayoutDashboard },
@@ -217,8 +219,8 @@ export default function Sidebar({ user, role }) {
           </ul>
         </nav>
 
-        {/* User info */}
-        <div className="px-4 py-4 border-t border-slate-800">
+        {/* User info & Sign out */}
+        <div className="px-4 py-4 border-t border-slate-800 space-y-3">
           <div className="flex items-center gap-3">
             <div className="relative w-9 h-9 flex-shrink-0">
               <Image
@@ -239,6 +241,16 @@ export default function Sidebar({ user, role }) {
               </p>
             </div>
           </div>
+          <button
+            onClick={async () => {
+              await authClient.signOut();
+              window.location.href = "/";
+            }}
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 bg-slate-900/50 hover:bg-slate-800 hover:text-white transition-all"
+          >
+            <LogOut size={16} />
+            Sign Out
+          </button>
         </div>
       </aside>
     </>

@@ -11,6 +11,7 @@ export default function AdminInvitationsPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("journalist");
+  const [generatedLink, setGeneratedLink] = useState(null);
 
   useEffect(() => {
     fetchInvitations();
@@ -50,6 +51,7 @@ export default function AdminInvitationsPage() {
         
         // In a real app we'd email this, but for now we'll show it
         const link = data.inviteLink;
+        setGeneratedLink(link);
         if (navigator.clipboard) {
           navigator.clipboard.writeText(link);
           toast.success("Invite link copied to clipboard!");
@@ -153,6 +155,33 @@ export default function AdminInvitationsPage() {
                 )}
               </button>
             </form>
+
+            {generatedLink && (
+              <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-xl">
+                <h3 className="text-sm font-semibold text-green-800 mb-2">Invitation Created!</h3>
+                <p className="text-xs text-green-700 mb-2">Share this link with the user (it expires in 7 days):</p>
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="text" 
+                    readOnly 
+                    value={generatedLink} 
+                    className="flex-1 px-3 py-2 bg-white border border-green-200 rounded-lg text-sm text-gray-700 focus:outline-none"
+                  />
+                  <button 
+                    onClick={() => {
+                      if (navigator.clipboard) {
+                        navigator.clipboard.writeText(generatedLink);
+                        toast.success("Link copied!");
+                      }
+                    }}
+                    className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    title="Copy Link"
+                  >
+                    <Copy size={16} />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
