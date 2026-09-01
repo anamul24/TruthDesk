@@ -1,4 +1,4 @@
-import { getNewsDetailsById, getArticlesByCategory } from "@/lib/data";
+import { getNewsDetailsById, getArticlesByCategory, getActiveCategoriesWithCount } from "@/lib/data";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -82,6 +82,22 @@ const RelatedArticleCard = ({ article }) => (
   </Link>
 );
 
+const CompactArticleCard = ({ article }) => (
+  <Link href={`/news/${article._id}`} className="group block mb-4 last:mb-0">
+    <h3 className="font-bold text-sm text-gray-900 group-hover:text-red-600 transition-colors leading-snug line-clamp-2">
+      {article.title}
+    </h3>
+    {article.excerpt && (
+      <p className="text-[11px] text-gray-500 mt-1 line-clamp-1">
+        {article.excerpt}
+      </p>
+    )}
+    <p className="text-[9px] text-gray-400 mt-1 uppercase font-medium">
+      {article.workflow?.publishedAt ? new Date(article.workflow.publishedAt).toLocaleDateString() : (article.author?.published_date || "Recently")}
+    </p>
+  </Link>
+);
+
 const NewsDetailsPage = async ({ params }) => {
   const { id } = await params;
   const news = await getNewsDetailsById(id);
@@ -90,13 +106,30 @@ const NewsDetailsPage = async ({ params }) => {
     notFound();
   }
 
-  // Fetch related news by category
+  // Fetch related news by category for Left Sidebar
   const relatedNews = news.category_id ? await getArticlesByCategory(news.category_id, 10) : [];
   const filteredRelated = relatedNews.filter((a) => a._id.toString() !== id);
   
-  const leftRelated = filteredRelated.slice(0, 3);
-  const rightRelated = filteredRelated.slice(3, 6);
+  const leftRelated = filteredRelated.slice(0, 4);
   const bottomRelated = filteredRelated.slice(0, 6); // For mobile
+
+  // Fetch other categories for Right Sidebar
+  const activeCategories = await getActiveCategoriesWithCount(2);
+  // Exclude current category
+  const otherCategories = activeCategories
+    .filter((cat) => cat.category_id !== news.category_id)
+    .slice(0, 3); // Get top 3 other categories
+
+  // Fetch articles for these categories
+  const otherCategoriesData = await Promise.all(
+    otherCategories.map(async (cat) => {
+      const catArticles = await getArticlesByCategory(cat._id, 3);
+      return {
+        ...cat,
+        articles: catArticles.filter((a) => a._id.toString() !== id).slice(0, 3)
+      };
+    })
+  );
 
   return (
     <>
@@ -128,7 +161,7 @@ const NewsDetailsPage = async ({ params }) => {
           <aside className="hidden lg:block lg:col-span-3">
             <div className="sticky top-24">
               <h4 className="font-bold text-sm uppercase tracking-wider text-gray-900 mb-5 border-b pb-2 border-gray-200">
-                More in {news.categoryName || `Category ${news.category_id}`}
+                More in {news.categoryName || `This Category`}
               </h4>
               {leftRelated.length > 0 ? (
                 leftRelated.map(article => <RelatedArticleCard key={article._id.toString()} article={article} />)
@@ -245,14 +278,37 @@ const NewsDetailsPage = async ({ params }) => {
 
           {/* Right Sidebar (Desktop Only) */}
           <aside className="hidden lg:block lg:col-span-3">
-            <div className="sticky top-24">
-              <h4 className="font-bold text-sm uppercase tracking-wider text-gray-900 mb-5 border-b pb-2 border-gray-200">
-                Related Stories
-              </h4>
-              {rightRelated.length > 0 ? (
-                rightRelated.map(article => <RelatedArticleCard key={article._id.toString()} article={article} />)
+            <div className="sticky top-24 space-y-10">
+              {otherCategoriesData.length > 0 ? (
+                otherCategoriesData.map((catData) => (
+                  <div key={catData._id}>
+                    <div className="flex items-center justify-between border-b border-gray-200 pb-2 mb-4">
+                      <h4 className="font-bold text-sm uppercase tracking-wider text-gray-900">
+                        {catData.category_name}
+                      </h4>
+                      <Link 
+                        href={`/category/${catData.category_id}`} 
+                        className="text-[10px] uppercase font-bold text-red-600 hover:text-red-700"
+                      >
+                        View All
+                      </Link>
+                    </div>
+                    {catData.articles.length > 0 ? (
+                      catData.articles.map((article) => (
+                        <CompactArticleCard key={article._id.toString()} article={article} />
+                      ))
+                    ) : (
+                      <p className="text-xs text-gray-400">No stories found.</p>
+                    )}
+                  </div>
+                ))
               ) : (
-                <p className="text-sm text-gray-400">More news coming soon.</p>
+                <div>
+                  <h4 className="font-bold text-sm uppercase tracking-wider text-gray-900 mb-4 border-b pb-2 border-gray-200">
+                    Latest Stories
+                  </h4>
+                  <p className="text-sm text-gray-400">More news coming soon.</p>
+                </div>
               )}
             </div>
           </aside>
