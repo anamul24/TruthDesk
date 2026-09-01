@@ -1,15 +1,29 @@
 import React from "react";
 import Link from "next/link";
-import NewsCard from "@/components/homepage/news/NewsCard";
+import FeatureSplitLayout from "@/components/homepage/layouts/FeatureSplitLayout";
+import ThreeColumnLayout from "@/components/homepage/layouts/ThreeColumnLayout";
+import FourColumnLayout from "@/components/homepage/layouts/FourColumnLayout";
+import HorizontalListLayout from "@/components/homepage/layouts/HorizontalListLayout";
 
 /**
- * CategorySection — reusable section for a single category.
- * Layout: 1 large card (left) + 2 smaller cards (right) on desktop.
+ * CategorySection — renders a different editorial layout per section index
+ * layoutIndex 0 → Feature Split (big main + 2 right + 3 bottom)
+ * layoutIndex 1 → Three Column Grid (3×2)
+ * layoutIndex 2 → Four Column Grid (4×2)
+ * layoutIndex 3 → Horizontal List (image + text rows)
+ * layoutIndex 4+ → cycles back through patterns
  */
-const CategorySection = ({ categoryName, categoryId, articles }) => {
+const CategorySection = ({ categoryName, categoryId, articles, layoutIndex = 0 }) => {
   if (!articles || articles.length === 0) return null;
 
-  const [bigStory, ...smallStories] = articles;
+  const layouts = [
+    FeatureSplitLayout,
+    ThreeColumnLayout,
+    FourColumnLayout,
+    HorizontalListLayout,
+  ];
+
+  const LayoutComponent = layouts[layoutIndex % layouts.length];
 
   return (
     <section className="container mx-auto px-4 py-8 border-t border-gray-100">
@@ -30,24 +44,7 @@ const CategorySection = ({ categoryName, categoryId, articles }) => {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Big story — takes 2 columns on md+ */}
-        <div className="md:col-span-2">
-          <NewsCard news={bigStory} variant="large" />
-        </div>
-
-        {/* Smaller stories — right column */}
-        <div className="md:col-span-1 space-y-5 border-t md:border-t-0 md:border-l border-gray-100 pt-5 md:pt-0 md:pl-5">
-          {smallStories.slice(0, 2).map((article, i) => (
-            <div key={article._id}>
-              <NewsCard news={article} variant="small" />
-              {i < 1 && smallStories.length > 1 && (
-                <div className="border-b border-gray-100 mt-5" />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
+      <LayoutComponent articles={articles} />
     </section>
   );
 };

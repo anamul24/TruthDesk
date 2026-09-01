@@ -46,6 +46,8 @@ export const COLLECTIONS = {
   ASSIGNMENTS: "assignments",
   PITCHES: "pitches",
   INVITATIONS: "invitations",
+  BREAKING_NEWS: "breakingNews",
+  ARTICLE_VIEWS: "articleViews",
 };
 
 export async function initDbIndexes() {
@@ -73,6 +75,15 @@ export async function initDbIndexes() {
   await db.collection(COLLECTIONS.INVITATIONS).createIndex({ tokenHash: 1 }, { unique: true });
   await db.collection(COLLECTIONS.INVITATIONS).createIndex({ email: 1 });
   await db.collection(COLLECTIONS.INVITATIONS).createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+
+  // breakingNews
+  await db.collection(COLLECTIONS.BREAKING_NEWS).createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+  await db.collection(COLLECTIONS.BREAKING_NEWS).createIndex({ createdAt: -1 });
+
+  // articleViews (for dedup by sessionId + articleId)
+  await db.collection(COLLECTIONS.ARTICLE_VIEWS).createIndex({ articleId: 1, sessionId: 1 }, { unique: true });
+  await db.collection(COLLECTIONS.ARTICLE_VIEWS).createIndex({ articleId: 1 });
+  await db.collection(COLLECTIONS.ARTICLE_VIEWS).createIndex({ viewedAt: 1 });
 
   console.log("Database indexes initialized.");
 }

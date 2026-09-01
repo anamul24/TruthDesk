@@ -13,12 +13,12 @@ export default async function JournalistDashboard() {
   const session = await requireRole([USER_ROLES.JOURNALIST, USER_ROLES.ADMIN]);
   const user = session?.user;
 
-  // Fetch stats and recent articles from DB
+  // Fetch stats and recent articles from DB - use ONLY authorId for strict isolation
   const collection = await getCollection(COLLECTIONS.ARTICLES);
   const authorId = user?.id;
-  const query = { $or: [{ authorId: user?.id }, { authorName: user?.name }] };
+  const query = { authorId: authorId };
 
-  // Temporary aggregation for stats (using authorName for this demo since we don't have proper authorIds yet)
+  // Aggregate stats per article status for this journalist only
   const stats = await collection.aggregate([
     { $match: query },
     { $group: { _id: "$status", count: { $sum: 1 } } }

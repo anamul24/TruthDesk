@@ -26,6 +26,9 @@ export const metadata = {
 // How many category sections to show on homepage
 const MAX_CATEGORY_SECTIONS = 4;
 
+// How many articles each layout needs (4-column needs 8, others need 6)
+const ARTICLES_PER_LAYOUT = [6, 6, 8, 5];
+
 const Home = async () => {
   // Parallel data fetching for performance
   const [
@@ -40,19 +43,19 @@ const Home = async () => {
     getLatestArticles(6),
     getMostReadArticles(5),
     getEditorsPicks(3),
-    getActiveCategoriesWithCount(3), // only categories with 3+ articles
+    getActiveCategoriesWithCount(1), // categories with 1+ articles
     getTrendingTopics(10),
   ]);
 
-  // Pick top categories for section display (skip any already shown in hero)
-  const featuredIds = new Set(featuredArticles.map((a) => a._id));
+  // Pick top categories for section display
+  const topCategories = activeCategories.slice(0, MAX_CATEGORY_SECTIONS);
+
   const categoryArticlesMap = await Promise.all(
-    activeCategories
-      .slice(0, MAX_CATEGORY_SECTIONS)
-      .map(async (cat) => {
-        const articles = await getArticlesByCategory(cat.category_id, 3);
-        return { category: cat, articles };
-      })
+    topCategories.map(async (cat, index) => {
+      const limit = ARTICLES_PER_LAYOUT[index] || 6;
+      const articles = await getArticlesByCategory(cat.category_id, limit);
+      return { category: cat, articles, layoutIndex: index };
+    })
   );
 
   return (
@@ -74,14 +77,15 @@ const Home = async () => {
         <EditorsPicksSection articles={editorsPicks} />
       )}
 
-      {/* ─── Category Sections ─────────────────────────── */}
-      {categoryArticlesMap.map(({ category, articles }) =>
+      {/* ─── Category Sections (varied layouts) ─────────── */}
+      {categoryArticlesMap.map(({ category, articles, layoutIndex }) =>
         articles.length >= 1 ? (
           <CategorySection
             key={category.category_id}
             categoryName={category.category_name}
             categoryId={category.category_id}
             articles={articles}
+            layoutIndex={layoutIndex}
           />
         ) : null
       )}

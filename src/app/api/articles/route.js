@@ -86,12 +86,9 @@ export async function GET(request) {
     // Build query based on user role
     const query = {};
     
-    // If journalist, only show their own articles
+    // If journalist, only show their own articles (strict authorId matching — never use name)
     if (session.user.role === "journalist") {
-      query.$or = [
-        { authorId: session.user.id },
-        { authorName: session.user.name }
-      ];
+      query.authorId = session.user.id;
     }
 
     if (status) {

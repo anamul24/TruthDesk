@@ -183,30 +183,63 @@ export async function getLatestArticles(limit = 6) {
 
 /**
  * Get featured/hero articles for the homepage (top 3: 1 hero + 2 secondary).
- * Priority: editorial.topNews first, then most recent.
+ * Priority: editorial.topNews with active schedule first, then most recent.
  */
-export async function getFeaturedArticles(limit = 3) {
+export async function getFeaturedArticles(limit = 5) {
   try {
     const collection = await getCollection(COLLECTIONS.ARTICLES);
+    const now = new Date();
 
-    // Try to get articles with images first, sorted by topNews flag then date
-    const articles = await collection
-      .find({ status: "PUBLISHED", "coverImage.url": { $exists: true, $ne: "" } })
-      .sort({ "editorial.topNews": -1, "workflow.publishedAt": -1, createdAt: -1 })
-      .limit(limit)
-      .toArray();
+    // 1. Try to find an actively scheduled Top News article
+    const scheduledTopNews = await collection.findOne({
+      status: "PUBLISHED",
+      "editorial.topNews": true,
+      $and: [
+        {
+          $or: [
+            { "editorial.topNewsStartAt": { $exists: false } },
+            { "editorial.topNewsStartAt": { $lte: now } },
+          ],
+        },
+        {
+          $or: [
+            { "editorial.topNewsEndAt": { $exists: false } },
+            { "editorial.topNewsEndAt": null },
+            { "editorial.topNewsEndAt": { $gte: now } },
+          ],
+        },
+      ],
+    });
 
-    // If not enough, fall back to all published
-    if (articles.length < limit) {
-      const fallback = await collection
-        .find({ status: "PUBLISHED" })
-        .sort({ "workflow.publishedAt": -1, createdAt: -1 })
-        .limit(limit)
-        .toArray();
-      return fallback.map(mapArticle);
+    let heroArticle = scheduledTopNews;
+
+    // 2. Fallback: if no active top news, use most recent published with image
+    if (!heroArticle) {
+      heroArticle = await collection.findOne(
+        { status: "PUBLISHED", "coverImage.url": { $exists: true, $ne: "" } },
+        { sort: { "workflow.publishedAt": -1, createdAt: -1 } }
+      );
+      if (!heroArticle) {
+        heroArticle = await collection.findOne(
+          { status: "PUBLISHED" },
+          { sort: { "workflow.publishedAt": -1, createdAt: -1 } }
+        );
+      }
     }
 
-    return articles.map(mapArticle);
+    if (!heroArticle) return [];
+
+    // 3. Fill the remaining slots with latest articles (excluding the hero)
+    const remaining = await collection
+      .find({
+        status: "PUBLISHED",
+        _id: { $ne: heroArticle._id },
+      })
+      .sort({ "workflow.publishedAt": -1, createdAt: -1 })
+      .limit(limit - 1)
+      .toArray();
+
+    return [heroArticle, ...remaining].map(mapArticle);
   } catch (error) {
     console.error("Error fetching featured articles:", error);
     return [];
@@ -314,29 +347,55 @@ export async function getTrendingTopics(limit = 10) {
 }
 
 /**
- * Get breaking news — articles with editorial.featured: true.
- * Falls back to 5 most recent if none flagged.
+ * Get breaking news — from the dedicated breakingNews collection.
+ * Only returns items that have not expired (expiresAt > now).
+ * Falls back to recently flagged articles if collection is empty.
  */
-export async function getBreakingNews(limit = 5) {
+export async function getBreakingNews(limit = 6) {
   try {
-    const collection = await getCollection(COLLECTIONS.ARTICLES);
+    const bnCollection = await getCollection(COLLECTIONS.BREAKING_NEWS);
+    const now = new Date();
 
-    let articles = await collection
+    const items = await bnCollection
+      .find({
+        $or: [
+          { expiresAt: { $exists: false } },
+          { expiresAt: null },
+          { expiresAt: { $gt: now } },
+        ],
+      })
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .toArray();
+
+    if (items.length > 0) {
+      return items.map((item) => ({
+        _id: item._id.toString(),
+        title: item.text,
+        url: item.url || null,
+        expiresAt: item.expiresAt,
+        createdAt: item.createdAt,
+      }));
+    }
+
+    // Fallback: article-based breaking news
+    const collection = await getCollection(COLLECTIONS.ARTICLES);
+    const articles = await collection
       .find({ status: "PUBLISHED", "editorial.featured": true })
       .sort({ "workflow.publishedAt": -1, createdAt: -1 })
       .limit(limit)
       .toArray();
 
-    // Fallback: most recent published articles
-    if (articles.length === 0) {
-      articles = await collection
-        .find({ status: "PUBLISHED" })
-        .sort({ "workflow.publishedAt": -1, createdAt: -1 })
-        .limit(limit)
-        .toArray();
+    if (articles.length > 0) {
+      return articles.map((a) => ({
+        _id: a._id.toString(),
+        title: a.title,
+        url: `/news/${a._id.toString()}`,
+        expiresAt: null,
+      }));
     }
 
-    return articles.map(mapArticle);
+    return [];
   } catch (error) {
     console.error("Error fetching breaking news:", error);
     return [];

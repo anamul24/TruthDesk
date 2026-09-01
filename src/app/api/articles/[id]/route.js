@@ -58,7 +58,7 @@ export async function PUT(request, { params }) {
 
     // Journalists can only edit their own articles in DRAFT or REVISION_REQUESTED status
     if (session.user.role === "journalist") {
-      if (article.authorName !== session.user.name) {
+      if (article.authorId !== session.user.id) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
       if (![ARTICLE_STATUS.DRAFT, ARTICLE_STATUS.REVISION_REQUESTED, ARTICLE_STATUS.PUBLISHED].includes(article.status)) {
@@ -107,6 +107,14 @@ export async function PUT(request, { params }) {
       delete updateData.isTopNews;
     }
 
+    // IMPORTANT: Never overwrite workflow.publishedAt if article is already published
+    // Only updatedAt should change on edit — publishedAt is immutable after first publish
+    if (article.status === ARTICLE_STATUS.PUBLISHED && updateData["workflow.publishedAt"]) {
+      delete updateData["workflow.publishedAt"];
+    }
+    // Explicitly protect publishedAt from being set via the update payload
+    delete updateData["workflow"];
+
     await collection.updateOne({ _id: new ObjectId(id) }, { $set: updateData });
 
     // Revalidate all public pages that show article content
@@ -148,7 +156,7 @@ export async function DELETE(request, { params }) {
     // Journalists can only delete their own drafts
     // Editors and Admins can delete any article
     if (session.user.role === "journalist") {
-      if (article.authorName !== session.user.name) {
+      if (article.authorId !== session.user.id) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
       if (article.status !== ARTICLE_STATUS.DRAFT) {
