@@ -47,7 +47,7 @@ export const COLLECTIONS = {
   PITCHES: "pitches",
   INVITATIONS: "invitations",
   BREAKING_NEWS: "breakingNews",
-  ARTICLE_VIEWS: "articleViews",
+  NEWS_VIEWS: "newsViews",
 };
 
 export async function initDbIndexes() {
@@ -80,10 +80,10 @@ export async function initDbIndexes() {
   await db.collection(COLLECTIONS.BREAKING_NEWS).createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
   await db.collection(COLLECTIONS.BREAKING_NEWS).createIndex({ createdAt: -1 });
 
-  // articleViews (for dedup by sessionId + articleId)
-  await db.collection(COLLECTIONS.ARTICLE_VIEWS).createIndex({ articleId: 1, sessionId: 1 }, { unique: true });
-  await db.collection(COLLECTIONS.ARTICLE_VIEWS).createIndex({ articleId: 1 });
-  await db.collection(COLLECTIONS.ARTICLE_VIEWS).createIndex({ viewedAt: 1 });
+  // newsViews (24-hour tracking by visitorId + newsId)
+  await db.collection(COLLECTIONS.NEWS_VIEWS).createIndex({ newsId: 1, visitorId: 1 });
+  await db.collection(COLLECTIONS.NEWS_VIEWS).createIndex({ newsId: 1 });
+  await db.collection(COLLECTIONS.NEWS_VIEWS).createIndex({ createdAt: 1 });
 
   console.log("Database indexes initialized.");
 }

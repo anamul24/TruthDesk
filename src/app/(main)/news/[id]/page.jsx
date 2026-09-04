@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import React from "react";
-import { BsArrowLeft } from "react-icons/bs";
+import { BsArrowLeft, BsEye } from "react-icons/bs";
 import { CiBookmark } from "react-icons/ci";
 import TiptapContentRenderer from "@/components/shared/TiptapContentRenderer";
 import ArticleViewTracker from "@/components/homepage/news/ArticleViewTracker";
@@ -192,7 +192,12 @@ const NewsDetailsPage = async ({ params }) => {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 text-gray-400">
+                <div className="flex items-center gap-4 text-gray-400">
+                  <div className="flex items-center gap-1.5 text-sm" title={`${news.total_view || 0} views`}>
+                    <BsEye className="text-[1.1rem]" />
+                    <span className="font-medium">{(news.total_view || 0).toLocaleString()} <span className="hidden sm:inline">views</span></span>
+                  </div>
+                  <div className="w-px h-4 bg-gray-200 hidden sm:block"></div>
                   <ShareButton title={news.title} text={news.excerpt} />
                   <button className="hover:text-gray-700 transition-colors" title="Bookmark">
                     <CiBookmark className="text-xl" />

@@ -2,15 +2,15 @@ import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import { getCollection, COLLECTIONS } from "@/lib/db";
 
-// POST /api/articles/[id]/view — track a view, session-based dedup
+// POST /api/articles/[id]/view — track a view, 24-hour dedup
 export async function POST(request, { params }) {
   try {
     const { id } = await params;
     const body = await request.json().catch(() => ({}));
-    const { sessionId } = body;
+    const { visitorId } = body;
 
-    if (!sessionId) {
-      return NextResponse.json({ error: "sessionId required" }, { status: 400 });
+    if (!visitorId) {
+      return NextResponse.json({ error: "visitorId required" }, { status: 400 });
     }
 
     // Validate article exists and is published
@@ -27,30 +27,35 @@ export async function POST(request, { params }) {
       return NextResponse.json({ counted: false });
     }
 
-    const viewsCollection = await getCollection(COLLECTIONS.ARTICLE_VIEWS);
+    const viewsCollection = await getCollection(COLLECTIONS.NEWS_VIEWS);
+    
+    // Check if this visitor viewed this article in the last 24 hours
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const existingView = await viewsCollection.findOne({
+      newsId: article._id.toString(),
+      visitorId,
+      createdAt: { $gte: twentyFourHoursAgo }
+    });
 
-    // Try to insert a view record — unique index on (articleId, sessionId) prevents dups
-    try {
-      await viewsCollection.insertOne({
-        articleId: article._id.toString(),
-        sessionId,
-        viewedAt: new Date(),
-      });
-
-      // Only increment counter if the insert succeeded (no duplicate)
-      await articlesCollection.updateOne(
-        { _id: article._id },
-        { $inc: { "stats.views": 1 } }
-      );
-
-      return NextResponse.json({ counted: true });
-    } catch (dupError) {
-      // Duplicate key error means this session already viewed this article
-      if (dupError.code === 11000) {
-        return NextResponse.json({ counted: false });
-      }
-      throw dupError;
+    if (existingView) {
+      // Already viewed in the last 24 hours
+      return NextResponse.json({ counted: false });
     }
+
+    // Insert new view record
+    await viewsCollection.insertOne({
+      newsId: article._id.toString(),
+      visitorId,
+      createdAt: new Date(),
+    });
+
+    // Increment article view count
+    await articlesCollection.updateOne(
+      { _id: article._id },
+      { $inc: { "stats.views": 1 } }
+    );
+
+    return NextResponse.json({ counted: true });
   } catch (err) {
     console.error("Failed to track view:", err);
     return NextResponse.json({ error: "Failed to track view" }, { status: 500 });
