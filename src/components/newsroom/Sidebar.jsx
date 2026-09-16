@@ -79,9 +79,8 @@ function getNavItems(role) {
   }
 }
 
-export default function Sidebar({ user, role }) {
+export default function Sidebar({ user, role, isOpen, setIsOpen }) {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
   const [expandedItems, setExpandedItems] = useState(["My Stories"]);
   const navItems = getNavItems(role);
 
@@ -105,36 +104,17 @@ export default function Sidebar({ user, role }) {
 
   return (
     <>
-      {/* Mobile Top Bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-slate-950 text-white z-40 flex items-center justify-between px-4 shadow-md">
-        <Link href="/" className="block">
-          <h1 className="text-lg font-black tracking-tight text-white">
-            TRUTH DESK
-          </h1>
-          <p className="text-[9px] uppercase tracking-[0.2em] text-slate-400 mt-0.5">
-            {roleLabel} Panel
-          </p>
-        </Link>
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="p-2 rounded-lg bg-slate-800 text-white hover:bg-slate-700 transition-colors"
-          aria-label="Toggle sidebar"
-        >
-          {isOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </div>
-
       {/* Overlay */}
       {isOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-30"
+          className="lg:hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 transition-opacity"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-slate-950 text-white z-40 flex flex-col transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full w-64 bg-slate-950 text-white z-50 flex flex-col transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 lg:static lg:z-auto`}
       >

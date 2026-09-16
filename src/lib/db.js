@@ -48,6 +48,8 @@ export const COLLECTIONS = {
   INVITATIONS: "invitations",
   BREAKING_NEWS: "breakingNews",
   NEWS_VIEWS: "newsViews",
+  MEDIA: "media",
+  SOURCES: "sources",
 };
 
 export async function initDbIndexes() {
@@ -84,6 +86,12 @@ export async function initDbIndexes() {
   await db.collection(COLLECTIONS.NEWS_VIEWS).createIndex({ newsId: 1, visitorId: 1 });
   await db.collection(COLLECTIONS.NEWS_VIEWS).createIndex({ newsId: 1 });
   await db.collection(COLLECTIONS.NEWS_VIEWS).createIndex({ createdAt: 1 });
+
+  // media
+  await db.collection(COLLECTIONS.MEDIA).createIndex({ uploaderId: 1, createdAt: -1 });
+
+  // sources
+  await db.collection(COLLECTIONS.SOURCES).createIndex({ articleId: 1 });
 
   console.log("Database indexes initialized.");
 }
