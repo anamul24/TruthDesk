@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Search, FileText, PenSquare, X } from "lucide-react";
+import { Search, FileText, PenSquare, X, Users, Shield, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function CommandPalette() {
@@ -29,7 +29,9 @@ export default function CommandPalette() {
   const actions = [
     { label: "Write New Story", href: "/journalist/write", icon: PenSquare },
     { label: "View All Stories", href: "/journalist/articles", icon: FileText },
-    // More will be added later
+    { label: "Create User", href: "/admin/users", icon: Users },
+    { label: "View Security Logs", href: "/admin/security", icon: Shield },
+    { label: "System Settings", href: "/admin/settings", icon: Settings },
   ];
 
   const handleSelect = (href) => {

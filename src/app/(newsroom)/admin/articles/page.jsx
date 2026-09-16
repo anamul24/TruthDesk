@@ -1,206 +1,113 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
-import {
-  FileText,
-  Search,
-  Loader2,
-  Filter,
-  Eye,
-  RefreshCw,
-  User,
-  Clock,
-} from "lucide-react";
-import { toast } from "sonner";
-import { formatDistanceToNow } from "date-fns";
-import ArticleStatusBadge from "@/components/newsroom/ArticleStatusBadge";
+import React from "react";
+import { requireRole } from "@/lib/authorize";
+import { USER_ROLES } from "@/lib/validations";
+import { getCollection, COLLECTIONS } from "@/lib/db";
+import { FileText, Search, Filter, MoreVertical, Archive, EyeOff, Trash2, Edit2 } from "lucide-react";
 import Link from "next/link";
+import { format } from "date-fns";
 
-const STATUS_OPTIONS = [
-  { label: "All", value: "" },
-  { label: "Draft", value: "DRAFT" },
-  { label: "Submitted", value: "SUBMITTED" },
-  { label: "In Review", value: "IN_REVIEW" },
-  { label: "Revision Requested", value: "REVISION_REQUESTED" },
-  { label: "Resubmitted", value: "RESUBMITTED" },
-  { label: "Published", value: "PUBLISHED" },
-  { label: "Rejected", value: "REJECTED" },
-  { label: "Archived", value: "ARCHIVED" },
-];
+export default async function ContentGovernance() {
+  await requireRole([USER_ROLES.ADMIN]);
 
-export default function AdminArticlesPage() {
-  const [articles, setArticles] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-
-  async function fetchArticles() {
-    setLoading(true);
-    try {
-      const url = statusFilter
-        ? `/api/articles?status=${statusFilter}`
-        : "/api/articles";
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        setArticles(data.articles || []);
-      } else {
-        toast.error("Failed to load articles");
-      }
-    } catch {
-      toast.error("Connection error");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    fetchArticles();
-  }, [statusFilter]);
-
-  const filtered = search
-    ? articles.filter(
-        (a) =>
-          a.title?.toLowerCase().includes(search.toLowerCase()) ||
-          a.authorName?.toLowerCase().includes(search.toLowerCase())
-      )
-    : articles;
+  const articlesDb = await getCollection(COLLECTIONS.ARTICLES);
+  // Get active articles (not soft-deleted)
+  const articles = await articlesDb.find({ isDeleted: { $ne: true } }).sort({ updatedAt: -1 }).limit(50).toArray();
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="p-6 md:p-8 lg:p-10 max-w-7xl mx-auto space-y-8 font-sans">
+      
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">All Articles</h1>
-          <p className="text-slate-500 text-sm mt-1">
-            {filtered.length} article{filtered.length !== 1 ? "s" : ""}
-          </p>
+          <h1 className="text-3xl font-bold text-slate-900 font-serif flex items-center gap-3">
+            <FileText className="text-blue-600" size={32} />
+            Content Governance
+          </h1>
+          <p className="text-slate-500 mt-2">Global view of all articles across the platform.</p>
         </div>
-        <button
-          onClick={fetchArticles}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition-all"
-        >
-          <RefreshCw size={15} />
-          Refresh
-        </button>
+        <Link href="/admin/trash" className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white border border-slate-300 text-slate-700 font-medium rounded-xl hover:bg-slate-50 transition-colors shadow-sm">
+          <Trash2 size={18} className="text-slate-400" />
+          Recovery Bin
+        </Link>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1 max-w-md">
-          <Search
-            size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-          />
-          <input
-            type="text"
-            placeholder="Search by title or author..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-slate-300 transition-all"
-          />
-        </div>
-        <div className="relative">
-          <Filter
-            size={14}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-          />
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300 transition-all"
-          >
-            {STATUS_OPTIONS.map((s) => (
-              <option key={s.value} value={s.value}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Status Tabs */}
-      <div className="flex flex-wrap gap-1.5">
-        {STATUS_OPTIONS.slice(0, 5).map((s) => (
-          <button
-            key={s.value}
-            onClick={() => setStatusFilter(s.value)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-              statusFilter === s.value
-                ? "bg-slate-900 text-white"
-                : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
-            }`}
-          >
-            {s.label}
+      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-1 items-center gap-3">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input 
+              type="text" 
+              placeholder="Search by title, author, or ID..." 
+              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 transition-colors"
+            />
+          </div>
+          <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 bg-slate-50 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-100 transition-colors">
+            <Filter size={16} /> Filters
           </button>
-        ))}
+        </div>
       </div>
 
-      {/* Articles List */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 size={24} className="animate-spin text-slate-400" />
-            <span className="ml-3 text-slate-500 text-sm">
-              Loading articles...
-            </span>
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="px-6 py-16 text-center">
-            <FileText size={40} className="mx-auto text-slate-300 mb-4" />
-            <p className="text-slate-500 text-sm">No articles found</p>
-          </div>
-        ) : (
-          <div className="divide-y divide-slate-100">
-            {filtered.map((article) => (
-              <div
-                key={article._id}
-                className="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50 transition-colors"
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-slate-900 truncate text-sm">
-                    {article.title}
-                  </p>
-                  <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-slate-500">
-                    <span className="flex items-center gap-1">
-                      <User size={11} />
-                      {article.authorName || "Unknown"}
-                    </span>
-                    <span className="w-1 h-1 bg-slate-300 rounded-full" />
-                    <span className="flex items-center gap-1">
-                      <Clock size={11} />
-                      {article.updatedAt
-                        ? formatDistanceToNow(new Date(article.updatedAt)) +
-                          " ago"
-                        : "Recently"}
-                    </span>
-                    {article.categoryName && (
-                      <>
-                        <span className="w-1 h-1 bg-slate-300 rounded-full" />
-                        <span>{article.categoryName}</span>
-                      </>
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-slate-50 border-b border-slate-100 text-xs uppercase tracking-wider font-semibold text-slate-500">
+              <th className="px-6 py-4 w-1/2">Title</th>
+              <th className="px-6 py-4">Author</th>
+              <th className="px-6 py-4">Status</th>
+              <th className="px-6 py-4">Last Updated</th>
+              <th className="px-6 py-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {articles.map(article => (
+              <tr key={article._id.toString()} className="hover:bg-slate-50 transition-colors">
+                <td className="px-6 py-4">
+                  <div className="font-bold text-slate-900 text-sm line-clamp-1">{article.title || "Untitled"}</div>
+                  <div className="text-xs text-slate-400 mt-1">ID: {article._id.toString()}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                  {article.authorName || "Unknown"}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${
+                    article.status === 'PUBLISHED' ? 'bg-green-100 text-green-700' :
+                    article.status === 'DRAFT' ? 'bg-slate-100 text-slate-600' :
+                    'bg-blue-100 text-blue-700'
+                  }`}>
+                    {article.status}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                  {format(new Date(article.updatedAt), "MMM d, yyyy")}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right">
+                  <div className="flex items-center justify-end gap-1">
+                    <button className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="View/Edit">
+                      <Edit2 size={16} />
+                    </button>
+                    {article.status === 'PUBLISHED' && (
+                      <button className="p-1.5 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded transition-colors" title="Unpublish">
+                        <EyeOff size={16} />
+                      </button>
                     )}
+                    <button className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded transition-colors" title="Archive">
+                      <Archive size={16} />
+                    </button>
+                    <button className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" title="Soft Delete">
+                      <Trash2 size={16} />
+                    </button>
                   </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <ArticleStatusBadge status={article.status} />
-                  {["SUBMITTED", "RESUBMITTED", "IN_REVIEW"].includes(
-                    article.status
-                  ) && (
-                    <Link
-                      href={`/editor/review/${article._id}`}
-                      className="text-xs font-medium text-white bg-indigo-600 px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-1"
-                    >
-                      <Eye size={12} />
-                      Review
-                    </Link>
-                  )}
-                </div>
-              </div>
+                </td>
+              </tr>
             ))}
-          </div>
-        )}
+            {articles.length === 0 && (
+              <tr>
+                <td colSpan={5} className="p-8 text-center text-slate-500">No articles found.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
+
     </div>
   );
 }

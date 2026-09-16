@@ -1,324 +1,147 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import {
-  Users,
-  Search,
-  Loader2,
-  ChevronDown,
-  ShieldAlert,
-  ShieldCheck,
-  UserCheck,
-  RefreshCw,
-  Mail,
-  Calendar,
-} from "lucide-react";
-import { toast } from "sonner";
-import { formatDistanceToNow } from "date-fns";
+import React, { useState } from "react";
+import { Users, UserPlus, Search, Filter, MoreVertical, Shield, Mail, Edit2, XCircle } from "lucide-react";
 
-const ROLES = ["user", "journalist", "editor", "admin"];
+export default function UserManagement() {
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
-const ROLE_COLORS = {
-  admin: "bg-red-100 text-red-700 border-red-200",
-  editor: "bg-indigo-100 text-indigo-700 border-indigo-200",
-  journalist: "bg-slate-100 text-slate-700 border-slate-200",
-  user: "bg-gray-100 text-gray-700 border-gray-200",
-};
-
-export default function AdminUsersPage() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [updatingId, setUpdatingId] = useState(null);
-  const [filterRole, setFilterRole] = useState("");
-
-  const fetchUsers = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/admin/users?limit=200");
-      if (res.ok) {
-        const data = await res.json();
-        setUsers(data.users || []);
-      } else {
-        toast.error("Failed to load users");
-      }
-    } catch {
-      toast.error("Connection error");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
-
-  async function handleRoleChange(userId, newRole) {
-    setUpdatingId(userId);
-    try {
-      const res = await fetch(`/api/admin/users/${userId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "setRole", role: newRole }),
-      });
-
-      if (res.ok) {
-        toast.success(`Role updated to ${newRole}`);
-        setUsers((prev) =>
-          prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
-        );
-      } else {
-        const data = await res.json();
-        toast.error(data.error || "Failed to update role");
-      }
-    } catch {
-      toast.error("Connection error");
-    } finally {
-      setUpdatingId(null);
-    }
-  }
-
-  async function handleBanToggle(user) {
-    const action = user.banned ? "unbanUser" : "banUser";
-    setUpdatingId(user.id);
-    try {
-      const res = await fetch(`/api/admin/users/${user.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action }),
-      });
-
-      if (res.ok) {
-        toast.success(user.banned ? "User unbanned" : "User banned");
-        setUsers((prev) =>
-          prev.map((u) =>
-            u.id === user.id ? { ...u, banned: !u.banned } : u
-          )
-        );
-      } else {
-        const data = await res.json();
-        toast.error(data.error || "Failed to update user");
-      }
-    } catch {
-      toast.error("Connection error");
-    } finally {
-      setUpdatingId(null);
-    }
-  }
-
-  const filtered = users.filter((u) => {
-    const matchSearch =
-      !search ||
-      u.name?.toLowerCase().includes(search.toLowerCase()) ||
-      u.email?.toLowerCase().includes(search.toLowerCase());
-    const matchRole = !filterRole || u.role === filterRole;
-    return matchSearch && matchRole;
-  });
+  // Mock users
+  const users = [
+    { id: "1", name: "Anamul", email: "anamul@truthdesk.com", role: "admin", status: "Active", joined: "Jan 12, 2024" },
+    { id: "2", name: "Jane Smith", email: "jane@truthdesk.com", role: "editor", status: "Active", joined: "Feb 03, 2024" },
+    { id: "3", name: "Rafiq Ahmed", email: "rafiq@truthdesk.com", role: "journalist", status: "Inactive", joined: "Mar 15, 2024" },
+    { id: "4", name: "Sarah Khan", email: "sarah@truthdesk.com", role: "fact_checker", status: "Active", joined: "Apr 22, 2024" },
+  ];
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="p-6 md:p-8 lg:p-10 max-w-7xl mx-auto space-y-8 font-sans">
+      
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">User Management</h1>
-          <p className="text-slate-500 mt-1 text-sm">
-            {users.length} registered users
-          </p>
+          <h1 className="text-3xl font-bold text-slate-900 font-serif flex items-center gap-3">
+            <Users className="text-blue-600" size={32} />
+            User Management
+          </h1>
+          <p className="text-slate-500 mt-2">Manage newsroom staff, roles, and access.</p>
         </div>
-        <button
-          onClick={fetchUsers}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition-all"
+        <button 
+          onClick={() => setIsInviteModalOpen(true)}
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors shadow-sm"
         >
-          <RefreshCw size={15} />
-          Refresh
+          <UserPlus size={18} />
+          Invite Staff
         </button>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1 max-w-md">
-          <Search
-            size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-          />
-          <input
-            type="text"
-            placeholder="Search by name or email..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-slate-300 transition-all"
-          />
+      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-1 items-center gap-3">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input 
+              type="text" 
+              placeholder="Search users..." 
+              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 transition-colors"
+            />
+          </div>
+          <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 bg-slate-50 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-100 transition-colors">
+            <Filter size={16} /> Filters
+          </button>
         </div>
-        <select
-          value={filterRole}
-          onChange={(e) => setFilterRole(e.target.value)}
-          className="px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300 transition-all"
-        >
-          <option value="">All Roles</option>
-          <option value="journalist">Journalists</option>
-          <option value="editor">Editors</option>
-          <option value="admin">Admins</option>
-        </select>
       </div>
 
-      {/* Users Table */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 size={24} className="animate-spin text-slate-400" />
-            <span className="ml-3 text-slate-500 text-sm">Loading users...</span>
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="px-6 py-16 text-center">
-            <Users size={40} className="mx-auto text-slate-300 mb-4" />
-            <p className="text-slate-500 text-sm">No users found</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-slate-50 border-b border-slate-100">
-                  <th className="text-left px-6 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">
-                    User
-                  </th>
-                  <th className="text-left px-6 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">
-                    Role
-                  </th>
-                  <th className="text-left px-6 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider hidden sm:table-cell">
-                    Joined
-                  </th>
-                  <th className="text-left px-6 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="text-right px-6 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filtered.map((u) => {
-                  const initials = u.name
-                    ? u.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")
-                        .toUpperCase()
-                        .slice(0, 2)
-                    : "U";
-                  const isUpdating = updatingId === u.id;
-
-                  return (
-                    <tr
-                      key={u.id}
-                      className="hover:bg-slate-50 transition-colors"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-slate-600 to-slate-800 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                            {initials}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="font-medium text-slate-900 truncate">
-                              {u.name || "—"}
-                            </p>
-                            <p className="text-xs text-slate-500 truncate flex items-center gap-1">
-                              <Mail size={11} />
-                              {u.email}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border capitalize ${
-                            ROLE_COLORS[u.role] || ROLE_COLORS.journalist
-                          }`}
-                        >
-                          {u.role || "journalist"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 hidden sm:table-cell">
-                        <span className="text-slate-500 text-xs flex items-center gap-1">
-                          <Calendar size={11} />
-                          {u.createdAt
-                            ? formatDistanceToNow(new Date(u.createdAt)) + " ago"
-                            : "—"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium ${
-                            u.banned
-                              ? "bg-red-50 text-red-600"
-                              : "bg-emerald-50 text-emerald-600"
-                          }`}
-                        >
-                          {u.banned ? (
-                            <ShieldAlert size={11} />
-                          ) : (
-                            <ShieldCheck size={11} />
-                          )}
-                          {u.banned ? "Banned" : "Active"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-2">
-                          {/* Role Dropdown */}
-                          <div className="relative">
-                            <select
-                              value={u.role || "journalist"}
-                              onChange={(e) =>
-                                handleRoleChange(u.id, e.target.value)
-                              }
-                              disabled={isUpdating}
-                              className="appearance-none pl-3 pr-7 py-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300 transition-all disabled:opacity-50 cursor-pointer"
-                            >
-                              {ROLES.map((r) => (
-                                <option key={r} value={r}>
-                                  {r.charAt(0).toUpperCase() + r.slice(1)}
-                                </option>
-                              ))}
-                            </select>
-                            {isUpdating ? (
-                              <Loader2
-                                size={11}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 animate-spin text-slate-400"
-                              />
-                            ) : (
-                              <ChevronDown
-                                size={11}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                              />
-                            )}
-                          </div>
-
-                          {/* Ban Toggle */}
-                          <button
-                            onClick={() => handleBanToggle(u)}
-                            disabled={isUpdating}
-                            className={`p-1.5 rounded-lg transition-colors disabled:opacity-50 ${
-                              u.banned
-                                ? "text-emerald-600 hover:bg-emerald-50"
-                                : "text-red-500 hover:bg-red-50"
-                            }`}
-                            title={u.banned ? "Unban user" : "Ban user"}
-                          >
-                            {u.banned ? (
-                              <UserCheck size={15} />
-                            ) : (
-                              <ShieldAlert size={15} />
-                            )}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-slate-50 border-b border-slate-100 text-xs uppercase tracking-wider font-semibold text-slate-500">
+              <th className="px-6 py-4">User</th>
+              <th className="px-6 py-4">Role</th>
+              <th className="px-6 py-4">Status</th>
+              <th className="px-6 py-4">Joined</th>
+              <th className="px-6 py-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {users.map(user => (
+              <tr key={user.id} className="hover:bg-slate-50 transition-colors">
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-500 shrink-0">
+                      {user.name.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="font-bold text-slate-900 text-sm">{user.name}</div>
+                      <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5"><Mail size={12}/> {user.email}</div>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded flex items-center w-fit gap-1.5 ${
+                    user.role === 'admin' ? 'bg-purple-100 text-purple-700' :
+                    user.role === 'editor' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-700'
+                  }`}>
+                    {user.role === 'admin' && <Shield size={12}/>}
+                    {user.role.replace("_", " ")}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                    user.status === 'Active' ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-slate-100 text-slate-500 border border-slate-200'
+                  }`}>
+                    {user.status}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                  {user.joined}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right">
+                  <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-slate-100 rounded-lg transition-colors">
+                    <Edit2 size={18} />
+                  </button>
+                  <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                    <XCircle size={18} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+
+      {isInviteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <h3 className="font-bold text-slate-900">Invite New Staff</h3>
+              <button onClick={() => setIsInviteModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <XCircle size={20} />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Email Address</label>
+                <input type="email" className="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="staff@truthdesk.com" />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Role</label>
+                <select className="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                  <option value="journalist">Journalist</option>
+                  <option value="editor">Editor</option>
+                  <option value="fact_checker">Fact Checker</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+            </div>
+            <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
+              <button onClick={() => setIsInviteModalOpen(false)} className="px-4 py-2 font-medium text-slate-600 hover:bg-slate-200 rounded-lg">Cancel</button>
+              <button className="px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700 rounded-lg shadow-sm flex items-center gap-2">
+                <Mail size={16}/> Send Invite
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

@@ -22,6 +22,17 @@ import {
   Radio,
   Star,
   LogOut,
+  Clock,
+  Layout,
+  CheckSquare,
+  Send,
+  CalendarDays,
+  Image as ImageIcon,
+  Activity,
+  Shield,
+  History,
+  DollarSign,
+  Briefcase
 } from "lucide-react";
 import userAvatar from "@/assets/user.png";
 import { authClient } from "@/lib/auth-client";
@@ -43,29 +54,41 @@ const JOURNALIST_NAV = [
       { label: "Published", href: "/journalist/articles?status=PUBLISHED" },
     ],
   },
+  { label: "Assignments", href: "/journalist/assignments", icon: CheckSquare },
+  { label: "Pitches", href: "/journalist/pitches", icon: Send },
   { label: "Performance", href: "/journalist/performance", icon: BarChart3 },
   { label: "Notifications", href: "/journalist/notifications", icon: Bell },
   { label: "Profile", href: "/journalist/profile", icon: User },
 ];
 
 const EDITOR_NAV = [
-  { label: "Dashboard", href: "/editor", icon: LayoutDashboard },
+  { label: "Overview", href: "/editor", icon: LayoutDashboard },
   { label: "Review Queue", href: "/editor/review", icon: ClipboardCheck },
-  { label: "Published", href: "/editor/published", icon: Newspaper },
+  { label: "Assignments", href: "/editor/assignments", icon: CheckSquare },
+  { label: "Pitches", href: "/editor/pitches", icon: Send },
+  { label: "Fact Check", href: "/editor/fact-check", icon: FileText },
   { label: "Breaking News", href: "/editor/breaking-news", icon: Radio },
-  { label: "Top News", href: "/editor/top-news", icon: Star },
+  { label: "Homepage", href: "/editor/homepage", icon: Layout },
+  { label: "Schedule", href: "/editor/schedule", icon: CalendarDays },
+  { label: "Published", href: "/editor/published", icon: Newspaper },
+  { label: "Analytics", href: "/editor/analytics", icon: BarChart3 },
+  { label: "Media", href: "/editor/media", icon: ImageIcon },
   { label: "Notifications", href: "/editor/notifications", icon: Bell },
-  { label: "Profile", href: "/editor/profile", icon: User },
 ];
 
 const ADMIN_NAV = [
-  { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { label: "Users", href: "/admin/users", icon: User },
-  { label: "Invitations", href: "/admin/invitations", icon: MailCheck },
-  { label: "Articles", href: "/admin/articles", icon: FileText },
+  { label: "Overview", href: "/admin", icon: LayoutDashboard },
+  { label: "System Health", href: "/admin/health", icon: Activity },
+  { label: "Users", href: "/admin/users", icon: Users },
+  { label: "Roles & Permissions", href: "/admin/roles", icon: Briefcase },
+  { label: "Content", href: "/admin/articles", icon: FileText },
   { label: "Categories", href: "/admin/categories", icon: Archive },
+  { label: "Media", href: "/admin/media", icon: ImageIcon },
   { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-  { label: "Profile", href: "/admin/profile", icon: Settings },
+  { label: "Monetization", href: "/admin/ads", icon: DollarSign },
+  { label: "Audit Logs", href: "/admin/audit-logs", icon: History },
+  { label: "Security", href: "/admin/security", icon: Shield },
+  { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 function getNavItems(role) {

@@ -80,12 +80,14 @@ export const articleSchema = z.object({
   }).optional(),
   readingTime: z.number().optional().default(0),
   wordCount: z.number().optional().default(0),
+  lockedBy: z.string().nullable().optional().default(null),
+  lockedAt: z.date().nullable().optional().default(null),
 });
 
 // Article update schema (all fields optional)
 export const articleUpdateSchema = articleSchema.partial();
 
-// Comment schema
+// Public Comment schema (from before)
 export const commentSchema = z.object({
   content: z
     .string()
@@ -94,6 +96,29 @@ export const commentSchema = z.object({
   articleId: z.string().min(1, "Article ID is required"),
   selectedText: z.string().optional().default(""), // Future: inline text selection
   parentId: z.string().optional(), // Future: reply threading
+});
+
+// Editor Inline Comment Schema
+export const editorCommentSchema = z.object({
+  articleId: z.string().min(1, "Article ID is required"),
+  editorId: z.string().min(1, "Editor ID is required"),
+  editorName: z.string(),
+  content: z.string().min(1, "Comment is required"),
+  selectedText: z.string().optional(),
+  section: z.string().optional(), // e.g. "headline", "body", "media"
+  status: z.enum(["OPEN", "RESOLVED"]).default("OPEN"),
+  createdAt: z.date().or(z.string()),
+});
+
+// Article Revision Schema
+export const articleRevisionSchema = z.object({
+  articleId: z.string().min(1, "Article ID is required"),
+  version: z.number().min(1),
+  content: z.any(), // Snapshot of the article content
+  title: z.string(),
+  changedBy: z.string(), // ID of the user who made the change
+  changeSummary: z.string().optional(),
+  createdAt: z.date().or(z.string()),
 });
 
 // Revision request schema
@@ -180,6 +205,73 @@ export const mediaSchema = z.object({
   credit: z.string().optional(),
 });
 
+// Breaking News Schema
+export const breakingNewsSchema = z.object({
+  headline: z.string().min(5, "Headline is required").max(150),
+  articleId: z.string().optional(),
+  link: z.string().optional(),
+  priority: z.enum(["HIGH", "CRITICAL"]).default("HIGH"),
+  isActive: z.boolean().default(true),
+  startTime: z.date().or(z.string()),
+  expiryTime: z.date().or(z.string()),
+  createdBy: z.string(),
+});
+
+// Homepage Layout Schema
+export const homepageLayoutSchema = z.object({
+  version: z.number().default(1),
+  heroStoryId: z.string().nullable().optional(),
+  topNewsIds: z.array(z.string()).default([]),
+  mustReadIds: z.array(z.string()).default([]),
+  latestNewsOrder: z.enum(["CHRONOLOGICAL", "CURATED"]).default("CHRONOLOGICAL"),
+  curatedLatestIds: z.array(z.string()).default([]),
+  categoryHighlights: z.record(z.array(z.string())).default({}), // e.g. { "sports": ["id1", "id2"] }
+  updatedBy: z.string(),
+  updatedAt: z.date().or(z.string()),
+});
+
+// Publishing Pipeline Status Schema
+export const publishingPipelineSchema = z.object({
+  articleId: z.string(),
+  channel: z.enum(["WEBSITE", "FACEBOOK", "TELEGRAM", "WHATSAPP", "X"]),
+  status: z.enum(["QUEUED", "PUBLISHING", "PUBLISHED", "FAILED", "RETRYING"]),
+  publishedUrl: z.string().optional(),
+  errorMessage: z.string().optional(),
+  updatedAt: z.date().or(z.string()),
+});
+
+// Audit Log Schema
+export const auditLogSchema = z.object({
+  action: z.string(),
+  targetId: z.string().optional(),
+  targetType: z.string().optional(), // "ARTICLE", "USER", "ROLE", "SETTING"
+  userId: z.string(),
+  userRole: z.string(),
+  userName: z.string(),
+  context: z.any().optional(), // Additional details
+  createdAt: z.date().or(z.string()),
+});
+
+// Settings Schema
+export const userSettingsSchema = z.object({
+  type: z.enum(["GENERAL", "EDITORIAL", "NOTIFICATIONS", "SECURITY"]),
+  config: z.any(), // Flexible config object depending on type
+  updatedBy: z.string(),
+  updatedAt: z.date().or(z.string()),
+});
+
+// Ad Slot Schema
+export const adSlotSchema = z.object({
+  name: z.string(),
+  placement: z.enum(["HOMEPAGE", "ARTICLE", "CATEGORY", "SIDEBAR", "BETWEEN_STORIES"]),
+  type: z.enum(["ADSENSE", "SPONSORED", "NATIVE"]),
+  status: z.enum(["ACTIVE", "INACTIVE", "SCHEDULED"]).default("INACTIVE"),
+  config: z.any().optional(), // Script tags, HTML, etc.
+  scheduleStart: z.date().or(z.string()).optional(),
+  scheduleEnd: z.date().or(z.string()).optional(),
+  createdAt: z.date().or(z.string()),
+});
+
 // Helper: Check if a status transition is valid
 export function isValidTransition(currentStatus, newStatus) {
   const allowed = STATUS_TRANSITIONS[currentStatus];
@@ -246,6 +338,8 @@ export function createArticleDocument({
     stats: {
       views: 0,
     },
+    lockedBy: null,
+    lockedAt: null,
     createdAt: now,
     updatedAt: now,
   };
