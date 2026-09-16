@@ -11,6 +11,7 @@ import {
   BarChart3,
   Bell,
   User,
+  Users,
   Menu,
   X,
   ChevronDown,
