@@ -37,6 +37,7 @@ export async function getCollection(name) {
 
 // Collection name constants
 export const COLLECTIONS = {
+  USERS: "user",
   ARTICLES: "articles",
   CATEGORIES: "categories",
   ARTICLE_REVISIONS: "articleRevisions",
