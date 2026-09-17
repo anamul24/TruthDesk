@@ -67,13 +67,12 @@ const EDITOR_NAV = [
   { label: "Review Queue", href: "/editor/review", icon: ClipboardCheck },
   { label: "Assignments", href: "/editor/assignments", icon: CheckSquare },
   { label: "Pitches", href: "/editor/pitches", icon: Send },
-  { label: "Fact Check", href: "/editor/fact-check", icon: FileText },
+  { label: "Fact Check", href: "/editor/review?status=FACT_CHECK", icon: FileText },
   { label: "Breaking News", href: "/editor/breaking-news", icon: Radio },
   { label: "Homepage", href: "/editor/homepage", icon: Layout },
   { label: "Schedule", href: "/editor/schedule", icon: CalendarDays },
   { label: "Published", href: "/editor/published", icon: Newspaper },
   { label: "Analytics", href: "/editor/analytics", icon: BarChart3 },
-  { label: "Media", href: "/editor/media", icon: ImageIcon },
   { label: "Notifications", href: "/editor/notifications", icon: Bell },
 ];
 

@@ -6,13 +6,8 @@ import { Users, UserPlus, Search, Filter, MoreVertical, Shield, Mail, Edit2, XCi
 export default function UserManagement() {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
-  // Mock users
-  const users = [
-    { id: "1", name: "Anamul", email: "anamul@truthdesk.com", role: "admin", status: "Active", joined: "Jan 12, 2024" },
-    { id: "2", name: "Jane Smith", email: "jane@truthdesk.com", role: "editor", status: "Active", joined: "Feb 03, 2024" },
-    { id: "3", name: "Rafiq Ahmed", email: "rafiq@truthdesk.com", role: "journalist", status: "Inactive", joined: "Mar 15, 2024" },
-    { id: "4", name: "Sarah Khan", email: "sarah@truthdesk.com", role: "fact_checker", status: "Active", joined: "Apr 22, 2024" },
-  ];
+  // TODO: Fetch users from API
+  const users = [];
 
   return (
     <div className="p-6 md:p-8 lg:p-10 max-w-7xl mx-auto space-y-8 font-sans">

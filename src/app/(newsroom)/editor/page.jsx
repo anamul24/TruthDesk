@@ -180,7 +180,7 @@ export default async function EditorDashboard() {
           <section>
             <h2 className="text-lg font-bold text-slate-900 mb-4">Quick Actions</h2>
             <div className="grid grid-cols-2 gap-3">
-              <Link href="/editor/assignments/new" className="flex flex-col items-center justify-center p-4 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors group">
+              <Link href="/editor/assignments" className="flex flex-col items-center justify-center p-4 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors group">
                 <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 mb-2 group-hover:scale-110 transition-transform">
                   <CheckSquare size={20} />
                 </div>

@@ -43,8 +43,8 @@ export default function WeatherWidget() {
 
   const fetchWeather = async () => {
     try {
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${DHAKA_LAT}&longitude=${DHAKA_LON}&current=temperature_2m,weather_code,relative_humidity_2m&temperature_unit=celsius&timezone=Asia%2FDhaka`;
-      const res = await fetch(url, { cache: "no-store" });
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${DHAKA_LAT}&longitude=${DHAKA_LON}&current=temperature_2m,weather_code,relative_humidity_2m&temperature_unit=celsius&timezone=Asia%2FDhaka&_t=${Date.now()}`;
+      const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to fetch weather");
       const data = await res.json();
       const current = data.current;

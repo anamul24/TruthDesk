@@ -70,7 +70,7 @@ export default function PlatformSettings() {
               
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1">Site Name</label>
-                <input type="text" defaultValue="TruthDesk News" className="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                <input type="text" placeholder="Enter Site Name" className="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
               </div>
               
               <div>
@@ -123,11 +123,11 @@ export default function PlatformSettings() {
               
               <div className="space-y-4">
                 <label className="flex items-center gap-3">
-                  <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                  <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
                   <span className="text-sm font-medium text-slate-700">Email digest for pending reviews</span>
                 </label>
                 <label className="flex items-center gap-3">
-                  <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                  <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
                   <span className="text-sm font-medium text-slate-700">In-app alerts for Breaking News creation</span>
                 </label>
               </div>
