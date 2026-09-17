@@ -12,8 +12,8 @@ export default async function AdminOverview() {
   const user = session?.user;
 
   const articlesDb = await getCollection(COLLECTIONS.ARTICLES);
-  const users = [1,2,3,4,5,6,7,8,9,10,11,12]; // Mock active staff
-  
+  const usersDb = await getCollection(COLLECTIONS.USERS);
+  const activeStaffCount = await usersDb.countDocuments({ status: { $ne: "Inactive" } });
   const articleStats = await articlesDb.aggregate([
     { $group: { _id: "$status", count: { $sum: 1 } } }
   ]).toArray();
@@ -52,7 +52,7 @@ export default async function AdminOverview() {
         <StatsCard label="Total Articles" value={totalArticles} icon="FileText" color="blue" />
         <StatsCard label="Published Today" value={statsMap["PUBLISHED"] || 0} icon="CheckCircle2" color="green" />
         <StatsCard label="Pending Review" value={pendingReview} icon="Activity" color="orange" />
-        <StatsCard label="Active Staff" value={users.length} icon="Users" color="indigo" />
+        <StatsCard label="Active Staff" value={activeStaffCount} icon="Users" color="indigo" />
         <StatsCard label="Total Views" value="2.4M" icon="TrendingUp" color="blue" />
         <StatsCard label="Active Readers" value="1,245" icon="Users" color="green" />
         <StatsCard label="Breaking Stories" value="1" icon="Radio" color="red" />
@@ -73,29 +73,10 @@ export default async function AdminOverview() {
                 <option>90 Days</option>
               </select>
             </div>
-            
-            {/* Mock Chart Area */}
-            <div className="h-64 w-full flex items-end justify-between gap-2 px-2 pb-6 border-b border-l border-slate-200 relative pt-10">
-              <div className="absolute top-0 left-0 w-full flex justify-between text-xs text-slate-400">
-                <span>100k</span>
-                <div className="w-full h-px bg-slate-100 absolute top-2 left-8 z-0"></div>
-              </div>
-              <div className="absolute top-1/2 left-0 w-full flex justify-between text-xs text-slate-400 -translate-y-1/2">
-                <span>50k</span>
-                <div className="w-full h-px bg-slate-100 absolute top-2 left-8 z-0"></div>
-              </div>
-              
-              {/* Bars */}
-              {[40, 60, 45, 80, 55, 90, 70].map((height, i) => (
-                <div key={i} className="w-full bg-indigo-100 rounded-t-sm relative z-10 hover:bg-indigo-200 transition-colors cursor-pointer group" style={{ height: `${height}%` }}>
-                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                    {height}k
-                  </div>
-                </div>
-              ))}
-              
-              <div className="absolute -bottom-6 left-0 w-full flex justify-around text-xs text-slate-500 font-medium ml-4">
-                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+            <div className="h-64 w-full flex items-center justify-center border border-slate-200 border-dashed rounded-xl mt-6 bg-slate-50">
+              <div className="text-center text-slate-500">
+                <TrendingUp size={32} className="mx-auto mb-3 text-slate-300" />
+                <p>Analytics aggregation service not configured.</p>
               </div>
             </div>
           </div>

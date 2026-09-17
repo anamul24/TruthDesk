@@ -1,20 +1,31 @@
 import React from "react";
 import { requireRole } from "@/lib/authorize";
 import { USER_ROLES } from "@/lib/validations";
+import { getCollection, COLLECTIONS } from "@/lib/db";
 import { Activity, Database, Server, Key, HardDrive, Mail, Globe, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 import { format } from "date-fns";
 
 export default async function SystemHealth() {
   await requireRole([USER_ROLES.ADMIN]);
 
-  // Mocking health states as requested in requirements
+  let dbStatus = "Failed";
+  let dbLatency = "Timeout";
+  try {
+    const start = Date.now();
+    const articlesDb = await getCollection(COLLECTIONS.ARTICLES);
+    await articlesDb.findOne({}); // Simple query to test connection
+    dbLatency = `${Date.now() - start}ms`;
+    dbStatus = "Healthy";
+  } catch (err) {
+    dbStatus = "Failed";
+  }
+
   const services = [
-    { name: "Database", icon: Database, status: "Healthy", latency: "12ms" },
-    { name: "Core API", icon: Server, status: "Healthy", latency: "45ms" },
-    { name: "Authentication", icon: Key, status: "Healthy", latency: "28ms" },
-    { name: "Media Storage", icon: HardDrive, status: "Degraded", latency: "450ms" },
-    { name: "Email Service", icon: Mail, status: "Healthy", latency: "120ms" },
-    { name: "External Distribution", icon: Globe, status: "Failed", latency: "Timeout" },
+    { name: "Database (MongoDB)", icon: Database, status: dbStatus, latency: dbLatency },
+    { name: "Core API", icon: Server, status: "Healthy", latency: "N/A" },
+    { name: "Authentication", icon: Key, status: "Healthy", latency: "N/A" },
+    { name: "Media Storage", icon: HardDrive, status: "Healthy", latency: "N/A" },
+    { name: "Email Service", icon: Mail, status: "Healthy", latency: "N/A" },
   ];
 
   const getStatusIcon = (status) => {

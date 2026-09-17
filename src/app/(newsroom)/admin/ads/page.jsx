@@ -1,15 +1,11 @@
-"use client";
-
-import React, { useState } from "react";
+import React from "react";
+import { getCollection, COLLECTIONS } from "@/lib/db";
 import { DollarSign, Layout, Plus, Edit2, Play, Square, Settings as SettingsIcon } from "lucide-react";
 
-export default function MonetizationManager() {
-  const [adSlots, setAdSlots] = useState([
-    { id: "1", name: "Homepage Leaderboard", placement: "HOMEPAGE", type: "ADSENSE", status: "Active", revenue: "$145.20" },
-    { id: "2", name: "Article Sidebar Sticky", placement: "SIDEBAR", type: "SPONSORED", status: "Active", revenue: "$320.00" },
-    { id: "3", name: "In-Article Native", placement: "ARTICLE", type: "NATIVE", status: "Inactive", revenue: "$0.00" },
-    { id: "4", name: "Category Top Banner", placement: "CATEGORY", type: "ADSENSE", status: "Scheduled", revenue: "$0.00" },
-  ]);
+export default async function MonetizationManager() {
+  const adsDb = await getCollection(COLLECTIONS.AD_PLACEMENTS);
+  const adSlots = await adsDb.find({}).toArray();
+  // Remove mock ad slots
 
   const getStatusClass = (status) => {
     switch(status) {
@@ -79,8 +75,8 @@ export default function MonetizationManager() {
         {/* List */}
         <div className="flex-1 p-4 overflow-y-auto">
           <div className="space-y-4">
-            {adSlots.map(slot => (
-              <div key={slot.id} className="bg-white border border-slate-200 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-green-300 transition-colors shadow-sm">
+            {adSlots.length > 0 ? adSlots.map(slot => (
+              <div key={slot._id.toString()} className="bg-white border border-slate-200 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-green-300 transition-colors shadow-sm">
                 
                 <div className="flex items-start gap-4 flex-1">
                   <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-slate-500 shrink-0">
@@ -99,7 +95,7 @@ export default function MonetizationManager() {
                 <div className="flex items-center gap-6">
                   <div className="text-right hidden sm:block">
                     <div className="text-xs text-slate-500 font-medium">Revenue</div>
-                    <div className="font-bold text-slate-900">{slot.revenue}</div>
+                    <div className="font-bold text-slate-900">{slot.revenue || "$0.00"}</div>
                   </div>
                   <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${getStatusClass(slot.status)}`}>
                     {slot.status}
@@ -122,7 +118,12 @@ export default function MonetizationManager() {
                 </div>
 
               </div>
-            ))}
+            )) : (
+              <div className="p-12 text-center text-slate-500">
+                <DollarSign size={32} className="mx-auto mb-3 text-slate-300" />
+                <p>No ad placements found in the database.</p>
+              </div>
+            )}
           </div>
         </div>
 

@@ -1,13 +1,14 @@
-"use client";
+import React from "react";
+import { getCollection, COLLECTIONS } from "@/lib/db";
+import { Users, UserPlus, Search, Filter, Shield, Mail, Edit2, XCircle } from "lucide-react";
+import Link from "next/link";
 
-import React, { useState } from "react";
-import { Users, UserPlus, Search, Filter, MoreVertical, Shield, Mail, Edit2, XCircle } from "lucide-react";
+export default async function UserManagement({ searchParams }) {
+  const isInviteModalOpen = searchParams?.invite === "true";
 
-export default function UserManagement() {
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-
-  // TODO: Fetch users from API
-  const users = [];
+  const usersDb = await getCollection(COLLECTIONS.USERS);
+  // Do not show passwords, only fetch safe fields
+  const users = await usersDb.find({}, { projection: { password: 0 } }).toArray();
 
   return (
     <div className="p-6 md:p-8 lg:p-10 max-w-7xl mx-auto space-y-8 font-sans">
@@ -20,13 +21,13 @@ export default function UserManagement() {
           </h1>
           <p className="text-slate-500 mt-2">Manage newsroom staff, roles, and access.</p>
         </div>
-        <button 
-          onClick={() => setIsInviteModalOpen(true)}
+        <Link 
+          href="/admin/users?invite=true"
           className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors shadow-sm"
         >
           <UserPlus size={18} />
           Invite Staff
-        </button>
+        </Link>
       </div>
 
       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -58,16 +59,16 @@ export default function UserManagement() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {users.map(user => (
-              <tr key={user.id} className="hover:bg-slate-50 transition-colors">
+            {users.length > 0 ? users.map(user => (
+              <tr key={user._id.toString()} className="hover:bg-slate-50 transition-colors">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-500 shrink-0">
-                      {user.name.charAt(0)}
+                    <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-500 shrink-0 uppercase">
+                      {user.name ? user.name.charAt(0) : "?"}
                     </div>
                     <div>
-                      <div className="font-bold text-slate-900 text-sm">{user.name}</div>
-                      <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5"><Mail size={12}/> {user.email}</div>
+                      <div className="font-bold text-slate-900 text-sm">{user.name || "Unknown"}</div>
+                      <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5"><Mail size={12}/> {user.email || "No email"}</div>
                     </div>
                   </div>
                 </td>
@@ -77,18 +78,18 @@ export default function UserManagement() {
                     user.role === 'editor' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-700'
                   }`}>
                     {user.role === 'admin' && <Shield size={12}/>}
-                    {user.role.replace("_", " ")}
+                    {user.role ? user.role.replace("_", " ") : "USER"}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                    user.status === 'Active' ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-slate-100 text-slate-500 border border-slate-200'
+                    user.status === 'Active' || !user.status ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-slate-100 text-slate-500 border border-slate-200'
                   }`}>
-                    {user.status}
+                    {user.status || "Active"}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
-                  {user.joined}
+                  {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "Unknown"}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
                   <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-slate-100 rounded-lg transition-colors">
@@ -99,7 +100,14 @@ export default function UserManagement() {
                   </button>
                 </td>
               </tr>
-            ))}
+            )) : (
+              <tr>
+                <td colSpan="5" className="p-12 text-center text-slate-500">
+                  <Users size={32} className="mx-auto mb-3 text-slate-300" />
+                  <p>No users found in the database.</p>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -109,9 +117,9 @@ export default function UserManagement() {
           <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-slate-900">Invite New Staff</h3>
-              <button onClick={() => setIsInviteModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+              <Link href="/admin/users" className="text-slate-400 hover:text-slate-600">
                 <XCircle size={20} />
-              </button>
+              </Link>
             </div>
             <div className="p-6 space-y-4">
               <div>
@@ -129,7 +137,7 @@ export default function UserManagement() {
               </div>
             </div>
             <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
-              <button onClick={() => setIsInviteModalOpen(false)} className="px-4 py-2 font-medium text-slate-600 hover:bg-slate-200 rounded-lg">Cancel</button>
+              <Link href="/admin/users" className="px-4 py-2 font-medium text-slate-600 hover:bg-slate-200 rounded-lg">Cancel</Link>
               <button className="px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700 rounded-lg shadow-sm flex items-center gap-2">
                 <Mail size={16}/> Send Invite
               </button>

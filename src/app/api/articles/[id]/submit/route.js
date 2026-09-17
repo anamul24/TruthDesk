@@ -65,7 +65,7 @@ export async function POST(request, { params }) {
       articleTitle: article.title,
       fromUserId: session.user.id,
       fromUserName: session.user.name,
-      link: `/editor/articles/${id}`,
+      link: `/editor/review/${id}`,
     });
 
     return NextResponse.json({ success: true, status: ARTICLE_STATUS.SUBMITTED });

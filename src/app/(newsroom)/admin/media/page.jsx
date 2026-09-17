@@ -1,18 +1,15 @@
-"use client";
-
-import React, { useState } from "react";
+import React from "react";
+import { getCollection, COLLECTIONS } from "@/lib/db";
 import { Image as ImageIcon, Search, Filter, HardDrive, Trash2, Video, FileText, CheckCircle2 } from "lucide-react";
+import Link from "next/link";
 
-export default function MediaGovernance() {
-  const [activeTab, setActiveTab] = useState("all");
+export default async function MediaGovernance({ searchParams }) {
+  const activeTab = searchParams?.tab || "all";
+  
+  const mediaDb = await getCollection(COLLECTIONS.MEDIA);
+  const mediaFiles = await mediaDb.find({}).toArray();
 
-  const mediaFiles = [
-    { id: "1", name: "summit_header.jpg", type: "IMAGE", size: "2.4 MB", used: true, date: "2024-03-10" },
-    { id: "2", name: "election_results.mp4", type: "VIDEO", size: "14.5 MB", used: true, date: "2024-03-09" },
-    { id: "3", name: "budget_draft_v2.pdf", type: "DOCUMENT", size: "1.2 MB", used: false, date: "2024-03-08" },
-    { id: "4", name: "placeholder_old.png", type: "IMAGE", size: "0.8 MB", used: false, date: "2024-02-15" },
-    { id: "5", name: "interview_clip.mp4", type: "VIDEO", size: "45.2 MB", used: true, date: "2024-03-01" },
-  ];
+  // Mock media array removed
 
   const filteredMedia = activeTab === "all" ? mediaFiles :
                         activeTab === "unused" ? mediaFiles.filter(m => !m.used) :
@@ -65,10 +62,10 @@ export default function MediaGovernance() {
         </div>
         
         <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
-          <button onClick={() => setActiveTab('all')} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'all' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-600 hover:bg-slate-200'}`}>All Assets</button>
-          <button onClick={() => setActiveTab('image')} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'image' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-600 hover:bg-slate-200'}`}>Images</button>
-          <button onClick={() => setActiveTab('video')} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'video' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-600 hover:bg-slate-200'}`}>Videos</button>
-          <button onClick={() => setActiveTab('unused')} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'unused' ? 'bg-white shadow-sm text-red-600' : 'text-slate-600 hover:bg-slate-200'}`}>Unused</button>
+          <Link href="/admin/media?tab=all" className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'all' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-600 hover:bg-slate-200'}`}>All Assets</Link>
+          <Link href="/admin/media?tab=image" className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'image' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-600 hover:bg-slate-200'}`}>Images</Link>
+          <Link href="/admin/media?tab=video" className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'video' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-600 hover:bg-slate-200'}`}>Videos</Link>
+          <Link href="/admin/media?tab=unused" className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'unused' ? 'bg-white shadow-sm text-red-600' : 'text-slate-600 hover:bg-slate-200'}`}>Unused</Link>
         </div>
       </div>
 
@@ -84,8 +81,8 @@ export default function MediaGovernance() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {filteredMedia.map(file => (
-              <tr key={file.id} className="hover:bg-slate-50 transition-colors">
+            {filteredMedia.length > 0 ? filteredMedia.map(file => (
+              <tr key={file._id.toString()} className="hover:bg-slate-50 transition-colors">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center shrink-0">
@@ -98,7 +95,7 @@ export default function MediaGovernance() {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-medium">
-                  {file.size}
+                  {file.size || "Unknown"}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {file.used ? (
@@ -112,7 +109,7 @@ export default function MediaGovernance() {
                   )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                  {file.date}
+                  {file.createdAt ? new Date(file.createdAt).toLocaleDateString() : "Unknown"}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
                   <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
@@ -120,7 +117,14 @@ export default function MediaGovernance() {
                   </button>
                 </td>
               </tr>
-            ))}
+            )) : (
+              <tr>
+                <td colSpan="5" className="p-12 text-center text-slate-500">
+                  <HardDrive size={32} className="mx-auto mb-3 text-slate-300" />
+                  <p>No media found in the database for this filter.</p>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
         {activeTab === 'unused' && filteredMedia.length > 0 && (
