@@ -29,6 +29,14 @@ const LoginPage = () => {
     return "/";
   };
 
+  const getRoleTitle = () => {
+    if (callbackUrl?.startsWith("/admin")) return "Admin Login";
+    if (callbackUrl?.startsWith("/editor")) return "Editor Login";
+    if (callbackUrl?.startsWith("/journalist")) return "Journalist Login";
+    if (callbackUrl?.startsWith("/fact-checker")) return "Fact Checker Login";
+    return "TruthDesk";
+  };
+
   const handleLoginFunc = async (data) => {
     setErrorMsg("");
     try {
@@ -76,7 +84,7 @@ const LoginPage = () => {
             className="px-6 sm:px-8 py-6 text-center"
             style={{ background: "linear-gradient(135deg, #0f172a, #1e293b)" }}
           >
-            <h1 className="text-2xl font-black text-white tracking-tight">TruthDesk</h1>
+            <h1 className="text-2xl font-black text-white tracking-tight">{getRoleTitle()}</h1>
             <p className="text-slate-400 text-sm mt-1">Sign in to your account</p>
           </div>
 
@@ -117,6 +125,7 @@ const LoginPage = () => {
                 </label>
                 <input
                   type="email"
+                  autoComplete="email"
                   className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-300 transition-all bg-white"
                   placeholder="you@example.com"
                   {...register("email", { required: "Email is required" })}
@@ -133,6 +142,7 @@ const LoginPage = () => {
                 <div className="relative">
                   <input
                     type={isShowPassword ? "text" : "password"}
+                    autoComplete="current-password"
                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-300 transition-all pr-10 bg-white"
                     placeholder="••••••••"
                     {...register("password", { required: "Password is required" })}

@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
 import userAvatar from "@/assets/user.png";
 import { authClient } from "@/lib/auth-client";
@@ -11,6 +12,7 @@ const NEWSROOM_ROLES = ["journalist", "editor", "admin"];
 const AuthButtons = () => {
   const { data: session, isPending, error } = authClient.useSession();
   const user = !error ? session?.user : null;
+  const pathname = usePathname();
 
   if (isPending) {
     return (
@@ -79,6 +81,12 @@ const AuthButtons = () => {
         )}
       </div>
     );
+  }
+
+  const isAuthPage = pathname?.startsWith("/login") || pathname?.startsWith("/register");
+
+  if (isAuthPage) {
+    return null;
   }
 
   return (

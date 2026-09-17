@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 // Routes that require authentication and specific roles
 const PROTECTED_ROUTES = {
   "/journalist": ["journalist", "admin"],
-  "/editor": ["editor", "admin"],
+  "/editor": ["editor", "admin", "fact_checker"],
   "/admin": ["admin"],
 };
 
@@ -12,6 +12,7 @@ const ROLE_REDIRECTS = {
   journalist: "/journalist",
   editor: "/editor",
   admin: "/admin",
+  fact_checker: "/editor",
 };
 
 export async function middleware(request) {

@@ -40,6 +40,7 @@ export default function UserManagement() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
             <input 
               type="text" 
+              autoComplete="off"
               placeholder="Search users..." 
               className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 transition-colors"
             />
@@ -120,7 +121,7 @@ export default function UserManagement() {
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1">Email Address</label>
-                <input type="email" className="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="staff@truthdesk.com" />
+                <input type="email" autoComplete="off" className="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="staff@truthdesk.com" />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1">Role</label>

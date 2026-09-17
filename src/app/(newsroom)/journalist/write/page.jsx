@@ -172,6 +172,7 @@ export default function WriteStoryPage() {
               <div className="space-y-4">
                 <input
                   type="text"
+                  autoComplete="off"
                   placeholder="Write your headline..."
                   className="w-full text-4xl md:text-5xl font-black font-serif text-slate-900 placeholder:text-slate-300 focus:outline-none bg-transparent"
                   {...register("title")}
@@ -182,6 +183,7 @@ export default function WriteStoryPage() {
 
                 <input
                   type="text"
+                  autoComplete="off"
                   placeholder="Short description or subtitle..."
                   className="w-full text-xl md:text-2xl font-medium text-slate-600 placeholder:text-slate-300 focus:outline-none bg-transparent"
                   {...register("subtitle")}

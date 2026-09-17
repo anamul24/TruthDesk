@@ -133,6 +133,7 @@ export default function EditorSidebar({
               <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider">Tags</label>
               <input
                 type="text"
+                autoComplete="off"
                 placeholder="Comma separated..."
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 {...register("tags")}
@@ -142,6 +143,7 @@ export default function EditorSidebar({
               <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider">SEO Title</label>
               <input
                 type="text"
+                autoComplete="off"
                 placeholder="Optional custom title..."
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 {...register("seo.title")}
