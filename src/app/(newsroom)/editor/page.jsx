@@ -171,7 +171,7 @@ export default async function EditorDashboard() {
                     <div className={`absolute -left-[5px] top-1.5 w-2 h-2 rounded-full ring-4 ring-white ${assignment.priority === 'BREAKING' ? 'bg-red-500' : assignment.priority === 'URGENT' ? 'bg-orange-500' : 'bg-blue-500'}`} />
                     <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">{format(new Date(assignment.deadline), "MMM d, h:mm a")}</p>
                     <p className="text-sm font-semibold text-slate-900 mt-1 line-clamp-1">{assignment.title}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">Assigned to: {assignment.journalistName || assignment.journalistId?.substring?.(0, 8) || " Unknown\}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">Assigned to: {assignment.journalistName || assignment.journalistId?.substring?.(0, 8) || "Unknown"}</p>
                   </div>
                 ))}
                 {upcomingDeadlines.length === 0 && (
