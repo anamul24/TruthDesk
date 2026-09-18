@@ -15,12 +15,16 @@ export default async function EditorDashboard() {
   const articlesDb = await getCollection(COLLECTIONS.ARTICLES);
   const assignmentsDb = await getCollection(COLLECTIONS.ASSIGNMENTS);
   const breakingDb = await getCollection(COLLECTIONS.BREAKING_NEWS);
+  const usersDb = await getCollection(COLLECTIONS.USERS);
 
   // Stats
   const articleStats = await articlesDb.aggregate([
     { $group: { _id: "$status", count: { $sum: 1 } } }
   ]).toArray();
   const statsMap = articleStats.reduce((acc, curr) => ({ ...acc, [curr._id]: curr.count }), {});
+
+  // Real team member count (active staff)
+  const teamMemberCount = await usersDb.countDocuments({ status: { $ne: "Inactive" } });
 
   // Editorial Queue (Pending Review, Fact Check, Resubmitted)
   const editorialQueue = await articlesDb.find({ 
@@ -75,7 +79,7 @@ export default async function EditorDashboard() {
         <StatsCard label="Fact Check" value={statsMap["FACT_CHECK"] || 0} icon="FileText" color="yellow" />
         <StatsCard label="Scheduled" value={statsMap["SCHEDULED"] || 0} icon="CalendarDays" color="blue" />
         <StatsCard label="Published Today" value={statsMap["PUBLISHED"] || 0} icon="Newspaper" color="green" />
-        <StatsCard label="Team Members" value="12" icon="Users" color="gray" />
+        <StatsCard label="Team Members" value={teamMemberCount} icon="Users" color="gray" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -167,7 +171,7 @@ export default async function EditorDashboard() {
                     <div className={`absolute -left-[5px] top-1.5 w-2 h-2 rounded-full ring-4 ring-white ${assignment.priority === 'BREAKING' ? 'bg-red-500' : assignment.priority === 'URGENT' ? 'bg-orange-500' : 'bg-blue-500'}`} />
                     <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">{format(new Date(assignment.deadline), "MMM d, h:mm a")}</p>
                     <p className="text-sm font-semibold text-slate-900 mt-1 line-clamp-1">{assignment.title}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">Assigned to ID: {assignment.journalistId.substring(0,6)}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">Assigned to: {assignment.journalistName || assignment.journalistId?.substring?.(0, 8) || " Unknown\}</p>
                   </div>
                 ))}
                 {upcomingDeadlines.length === 0 && (

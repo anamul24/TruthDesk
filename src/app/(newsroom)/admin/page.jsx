@@ -13,6 +13,8 @@ export default async function AdminOverview() {
 
   const articlesDb = await getCollection(COLLECTIONS.ARTICLES);
   const usersDb = await getCollection(COLLECTIONS.USERS);
+  const breakingDb = await getCollection(COLLECTIONS.BREAKING_NEWS);
+
   const activeStaffCount = await usersDb.countDocuments({ status: { $ne: "Inactive" } });
   const articleStats = await articlesDb.aggregate([
     { $group: { _id: "$status", count: { $sum: 1 } } }
@@ -21,6 +23,15 @@ export default async function AdminOverview() {
   
   const totalArticles = Object.values(statsMap).reduce((a, b) => a + b, 0);
   const pendingReview = (statsMap["SUBMITTED"] || 0) + (statsMap["RESUBMITTED"] || 0) + (statsMap["FACT_CHECK"] || 0);
+  const breakingCount = await breakingDb.countDocuments({ isActive: true });
+
+  // Today's published: articles published today
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const publishedToday = await articlesDb.countDocuments({
+    status: "PUBLISHED",
+    "workflow.publishedAt": { $gte: todayStart }
+  });
 
   return (
     <div className="p-6 md:p-8 lg:p-10 max-w-7xl mx-auto space-y-10 font-sans">
@@ -50,12 +61,12 @@ export default async function AdminOverview() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatsCard label="Total Articles" value={totalArticles} icon="FileText" color="blue" />
-        <StatsCard label="Published Today" value={statsMap["PUBLISHED"] || 0} icon="CheckCircle2" color="green" />
+        <StatsCard label="Published Today" value={publishedToday} icon="CheckCircle2" color="green" />
         <StatsCard label="Pending Review" value={pendingReview} icon="Activity" color="orange" />
         <StatsCard label="Active Staff" value={activeStaffCount} icon="Users" color="indigo" />
-        <StatsCard label="Total Views" value="2.4M" icon="TrendingUp" color="blue" />
-        <StatsCard label="Active Readers" value="1,245" icon="Users" color="green" />
-        <StatsCard label="Breaking Stories" value="1" icon="Radio" color="red" />
+        <StatsCard label="Total Published" value={statsMap["PUBLISHED"] || 0} icon="TrendingUp" color="blue" />
+        <StatsCard label="Total Drafts" value={statsMap["DRAFT"] || 0} icon="FileText" color="green" />
+        <StatsCard label="Active Breaking" value={breakingCount} icon="Radio" color="red" />
         <StatsCard label="Scheduled" value={statsMap["SCHEDULED"] || 0} icon="CalendarDays" color="gray" />
       </div>
 
@@ -98,6 +109,10 @@ export default async function AdminOverview() {
               <Link href="/admin/audit-logs" className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700 transition-colors border border-transparent hover:border-slate-200">
                 <div className="p-2 bg-slate-100 text-slate-600 rounded-lg"><Activity size={18} /></div>
                 <div className="font-medium text-sm">View Audit Logs</div>
+              </Link>
+              <Link href="/admin/invitations" className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700 transition-colors border border-transparent hover:border-slate-200">
+                <div className="p-2 bg-green-50 text-green-600 rounded-lg"><Radio size={18} /></div>
+                <div className="font-medium text-sm">Manage Invitations</div>
               </Link>
             </div>
           </div>

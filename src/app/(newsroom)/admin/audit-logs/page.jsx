@@ -1,20 +1,35 @@
 import React from "react";
 import { requireRole } from "@/lib/authorize";
 import { USER_ROLES } from "@/lib/validations";
-import { History, Search, Filter, Calendar } from "lucide-react";
+import { getCollection, COLLECTIONS } from "@/lib/db";
+import { History, Search, Filter, Calendar, FileText, Users, Settings, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 
-export default async function AuditLogs() {
+const ITEMS_PER_PAGE = 20;
+
+export default async function AuditLogs({ searchParams }) {
   await requireRole([USER_ROLES.ADMIN]);
 
-  // Mock audit logs representing the immutable timeline
-  const logs = [
-    { id: "1", action: "Published Article", target: "Global Summit Reaches Historic Agreement", targetType: "ARTICLE", user: "Jane Editor", role: "EDITOR", time: new Date(Date.now() - 3600000) },
-    { id: "2", action: "Updated Role", target: "Sarah Khan -> Fact Checker", targetType: "USER", user: "System Admin", role: "ADMIN", time: new Date(Date.now() - 7200000) },
-    { id: "3", action: "Created Breaking Alert", target: "Major Policy Shift", targetType: "ALERT", user: "Mark Desk", role: "EDITOR", time: new Date(Date.now() - 10800000) },
-    { id: "4", action: "Soft Deleted", target: "Draft: Unconfirmed Report", targetType: "ARTICLE", user: "System Admin", role: "ADMIN", time: new Date(Date.now() - 86400000) },
-    { id: "5", action: "Submitted Article", target: "Local Elections Yield Surprising Results", targetType: "ARTICLE", user: "Rafiq Reporter", role: "JOURNALIST", time: new Date(Date.now() - 90000000) },
-  ];
+  const page = parseInt(searchParams?.page || "1");
+  const skip = (page - 1) * ITEMS_PER_PAGE;
+
+  const logsDb = await getCollection(COLLECTIONS.AUDIT_LOGS);
+  const [logs, totalCount] = await Promise.all([
+    logsDb.find({}).sort({ createdAt: -1 }).skip(skip).limit(ITEMS_PER_PAGE).toArray(),
+    logsDb.countDocuments({}),
+  ]);
+
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+
+  const getTargetTypeClass = (type) => {
+    switch (type) {
+      case "ARTICLE": return "bg-blue-100 text-blue-700";
+      case "USER": return "bg-purple-100 text-purple-700";
+      case "SYSTEM": return "bg-slate-100 text-slate-600";
+      case "ALERT": return "bg-red-100 text-red-700";
+      default: return "bg-slate-100 text-slate-500";
+    }
+  };
 
   return (
     <div className="p-6 md:p-8 lg:p-10 max-w-7xl mx-auto space-y-8 font-sans">
@@ -66,35 +81,60 @@ export default async function AuditLogs() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {logs.map(log => (
-              <tr key={log.id} className="hover:bg-slate-50 transition-colors">
+            {logs.length > 0 ? logs.map(log => (
+              <tr key={log._id.toString()} className="hover:bg-slate-50 transition-colors">
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 font-medium">
-                  {format(log.time, "MMM d, yyyy HH:mm:ss")}
+                  {format(new Date(log.createdAt || log.timestamp || new Date()), "MMM d, yyyy HH:mm:ss")}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="font-bold text-slate-900 text-sm">{log.action}</span>
+                  <span className="font-bold text-slate-900 text-sm">{log.action || "Unknown Action"}</span>
                 </td>
                 <td className="px-6 py-4 text-sm text-slate-700">
                   <div className="flex items-center gap-2">
-                    <span className="px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold uppercase tracking-wider">{log.targetType}</span>
-                    <span className="line-clamp-1">{log.target}</span>
+                    {log.targetType && (
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${getTargetTypeClass(log.targetType)}`}>
+                        {log.targetType}
+                      </span>
+                    )}
+                    <span className="line-clamp-1">{log.target || log.targetId || "—"}</span>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="font-bold text-slate-900 text-sm">{log.user}</div>
-                  <div className="text-xs text-slate-500 mt-0.5">{log.role}</div>
+                  <div className="font-bold text-slate-900 text-sm">{log.userName || log.userId || "System"}</div>
+                  {log.role && <div className="text-xs text-slate-500 mt-0.5">{log.role}</div>}
                 </td>
               </tr>
-            ))}
+            )) : (
+              <tr>
+                <td colSpan={4} className="p-12 text-center">
+                  <History size={32} className="mx-auto mb-3 text-slate-300" />
+                  <p className="text-slate-500 font-medium">No audit logs found.</p>
+                  <p className="text-slate-400 text-sm mt-1">Events will appear here as actions are taken in the system.</p>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
         
-        {/* Pagination mock */}
+        {/* Real Pagination */}
         <div className="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between text-sm text-slate-500">
-          <span>Showing 1 to 5 of 1,240 entries</span>
+          <span>
+            {totalCount > 0
+              ? `Showing ${skip + 1}–${Math.min(skip + ITEMS_PER_PAGE, totalCount)} of ${totalCount.toLocaleString()} entries`
+              : "No entries found"}
+          </span>
           <div className="flex gap-1">
-            <button className="px-3 py-1 bg-white border border-slate-200 rounded hover:bg-slate-100 disabled:opacity-50" disabled>Prev</button>
-            <button className="px-3 py-1 bg-white border border-slate-200 rounded hover:bg-slate-100">Next</button>
+            {page > 1 ? (
+              <a href={`?page=${page - 1}`} className="px-3 py-1 bg-white border border-slate-200 rounded hover:bg-slate-100">Prev</a>
+            ) : (
+              <button className="px-3 py-1 bg-white border border-slate-200 rounded opacity-50 cursor-not-allowed" disabled>Prev</button>
+            )}
+            <span className="px-3 py-1 bg-slate-900 text-white rounded">{page}</span>
+            {page < totalPages ? (
+              <a href={`?page=${page + 1}`} className="px-3 py-1 bg-white border border-slate-200 rounded hover:bg-slate-100">Next</a>
+            ) : (
+              <button className="px-3 py-1 bg-white border border-slate-200 rounded opacity-50 cursor-not-allowed" disabled>Next</button>
+            )}
           </div>
         </div>
       </div>

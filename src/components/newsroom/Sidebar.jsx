@@ -80,6 +80,7 @@ const ADMIN_NAV = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard },
   { label: "System Health", href: "/admin/health", icon: Activity },
   { label: "Users", href: "/admin/users", icon: Users },
+  { label: "Invitations", href: "/admin/invitations", icon: MailCheck },
   { label: "Roles & Permissions", href: "/admin/roles", icon: Briefcase },
   { label: "Content", href: "/admin/articles", icon: FileText },
   { label: "Categories", href: "/admin/categories", icon: Archive },
@@ -89,6 +90,7 @@ const ADMIN_NAV = [
   { label: "Audit Logs", href: "/admin/audit-logs", icon: History },
   { label: "Security", href: "/admin/security", icon: Shield },
   { label: "Settings", href: "/admin/settings", icon: Settings },
+  { label: "Profile", href: "/admin/profile", icon: User },
 ];
 
 function getNavItems(role) {

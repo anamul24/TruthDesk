@@ -65,8 +65,7 @@ export default async function TrashRecovery() {
                   <div className="text-xs text-slate-400 mt-1">ID: {article._id.toString()}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
-                  {/* Mocking deletedBy for now */}
-                  System Admin
+                  {article.deletedByName || article.deletedBy || "Unknown"}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                   {format(new Date(article.updatedAt), "MMM d, yyyy h:mm a")}

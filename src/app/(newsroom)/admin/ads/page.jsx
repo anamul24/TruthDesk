@@ -5,7 +5,9 @@ import { DollarSign, Layout, Plus, Edit2, Play, Square, Settings as SettingsIcon
 export default async function MonetizationManager() {
   const adsDb = await getCollection(COLLECTIONS.AD_PLACEMENTS);
   const adSlots = await adsDb.find({}).toArray();
-  // Remove mock ad slots
+
+  const activeCount = adSlots.filter(s => s.status === "Active").length;
+  const topPerformer = adSlots.sort((a, b) => (parseFloat(b.revenue || 0) - parseFloat(a.revenue || 0)))[0];
 
   const getStatusClass = (status) => {
     switch(status) {
@@ -35,19 +37,25 @@ export default async function MonetizationManager() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <p className="text-sm font-semibold text-slate-500 mb-1">Estimated Revenue (30d)</p>
-          <h3 className="text-3xl font-black text-slate-900">$465.20</h3>
-          <p className="text-xs text-green-600 font-bold mt-2 flex items-center gap-1">+12% from last month</p>
+          <p className="text-sm font-semibold text-slate-500 mb-1">Total Ad Slots</p>
+          <h3 className="text-3xl font-black text-slate-900">{adSlots.length}</h3>
+          <p className="text-xs text-slate-500 mt-2">{activeCount} currently active</p>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
           <p className="text-sm font-semibold text-slate-500 mb-1">Active Placements</p>
-          <h3 className="text-3xl font-black text-slate-900">2</h3>
-          <p className="text-xs text-slate-500 mt-2">Out of 4 total slots</p>
+          <h3 className="text-3xl font-black text-slate-900">{activeCount}</h3>
+          <p className="text-xs text-slate-500 mt-2">Out of {adSlots.length} total slots</p>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
           <p className="text-sm font-semibold text-slate-500 mb-1">Top Performing</p>
-          <h3 className="text-lg font-bold text-slate-900 line-clamp-1 mt-1">Article Sidebar Sticky</h3>
-          <p className="text-xs text-slate-500 mt-2">Sponsored Content</p>
+          {topPerformer ? (
+            <>
+              <h3 className="text-lg font-bold text-slate-900 line-clamp-1 mt-1">{topPerformer.name}</h3>
+              <p className="text-xs text-slate-500 mt-2">{topPerformer.type || "Ad Placement"}</p>
+            </>
+          ) : (
+            <h3 className="text-lg font-bold text-slate-400 mt-1">No placements yet</h3>
+          )}
         </div>
       </div>
 

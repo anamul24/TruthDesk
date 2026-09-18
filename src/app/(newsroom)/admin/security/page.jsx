@@ -1,22 +1,41 @@
 import React from "react";
 import { requireRole } from "@/lib/authorize";
 import { USER_ROLES } from "@/lib/validations";
-import { Shield, Key, AlertTriangle, Monitor, XCircle, Clock, Smartphone } from "lucide-react";
-import { format } from "date-fns";
+import { getCollection, COLLECTIONS } from "@/lib/db";
+import { Shield, Key, AlertTriangle, Monitor, Smartphone, Clock, Info } from "lucide-react";
+import { format, formatDistanceToNow } from "date-fns";
 
 export default async function SecurityCenter() {
   await requireRole([USER_ROLES.ADMIN]);
 
-  const activeSessions = [
-    { id: "s1", user: "Admin User", device: "MacBook Pro - Chrome", ip: "192.168.1.1", lastActive: new Date(), current: true },
-    { id: "s2", user: "Admin User", device: "iPhone 13 - Safari", ip: "10.0.0.45", lastActive: new Date(Date.now() - 3600000), current: false }
-  ];
+  // Real session data from DB
+  const sessionsDb = await getCollection(COLLECTIONS.SESSIONS);
+  const auditDb = await getCollection(COLLECTIONS.AUDIT_LOGS);
 
-  const securityEvents = [
-    { id: "e1", type: "WARNING", message: "Failed login attempt (3x)", user: "jane@truthdesk.com", ip: "103.11.22.33", time: new Date(Date.now() - 86400000) },
-    { id: "e2", type: "INFO", message: "Password changed", user: "rafiq@truthdesk.com", ip: "192.168.1.100", time: new Date(Date.now() - 172800000) },
-    { id: "e3", type: "CRITICAL", message: "Role upgraded to Admin", user: "sarah@truthdesk.com", ip: "192.168.1.1", time: new Date(Date.now() - 259200000) },
-  ];
+  // Get active sessions (sort by most recent)
+  const activeSessions = await sessionsDb
+    .find({ expiresAt: { $gt: new Date() } })
+    .sort({ updatedAt: -1 })
+    .limit(10)
+    .toArray();
+
+  // Get recent security-related audit events
+  const securityEvents = await auditDb
+    .find({ targetType: { $in: ["USER", "SYSTEM", "SECURITY", "AUTH"] } })
+    .sort({ createdAt: -1 })
+    .limit(10)
+    .toArray();
+
+  const getSeverityIcon = (event) => {
+    const action = (event.action || "").toLowerCase();
+    if (action.includes("fail") || action.includes("block") || action.includes("denied")) {
+      return <AlertTriangle className="text-orange-500 shrink-0" size={18} />;
+    }
+    if (action.includes("role") || action.includes("admin") || action.includes("delete")) {
+      return <Shield className="text-purple-500 shrink-0" size={18} />;
+    }
+    return <Info className="text-blue-500 shrink-0" size={18} />;
+  };
 
   return (
     <div className="p-6 md:p-8 lg:p-10 max-w-7xl mx-auto space-y-8 font-sans">
@@ -36,33 +55,41 @@ export default async function SecurityCenter() {
           <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
             <Monitor size={20} className="text-slate-400" />
             Active Sessions
+            <span className="ml-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">{activeSessions.length}</span>
           </h2>
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-100">
-            {activeSessions.map(session => (
-              <div key={session.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            {activeSessions.length > 0 ? activeSessions.map(session => (
+              <div key={session._id.toString()} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-start gap-4">
                   <div className="mt-1 p-2 bg-slate-100 text-slate-500 rounded-lg shrink-0">
-                    {session.device.includes("iPhone") ? <Smartphone size={20} /> : <Monitor size={20} />}
+                    {(session.userAgent || "").includes("Mobile") || (session.userAgent || "").includes("iPhone") 
+                      ? <Smartphone size={20} /> 
+                      : <Monitor size={20} />}
                   </div>
                   <div>
-                    <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                      {session.device}
-                      {session.current && <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-[10px] uppercase tracking-wider font-bold">Current</span>}
+                    <h3 className="font-bold text-slate-900 text-sm">
+                      {session.userId?.toString()?.substring(0, 8) || "Unknown User"}...
                     </h3>
                     <div className="text-xs text-slate-500 mt-1 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-                      <span>IP: {session.ip}</span>
-                      <span className="hidden sm:inline">•</span>
-                      <span>Last active: {format(session.lastActive, "MMM d, h:mm a")}</span>
+                      {session.ipAddress && <span>IP: {session.ipAddress}</span>}
+                      {session.ipAddress && <span className="hidden sm:inline">•</span>}
+                      <span className="flex items-center gap-1">
+                        <Clock size={12} />
+                        Expires {format(new Date(session.expiresAt), "MMM d, h:mm a")}
+                      </span>
                     </div>
                   </div>
                 </div>
-                {!session.current && (
-                  <button className="self-start sm:self-center px-4 py-2 bg-white border border-red-200 text-red-600 text-sm font-medium rounded-lg hover:bg-red-50 transition-colors shrink-0">
-                    Revoke
-                  </button>
-                )}
+                <button className="self-start sm:self-center px-4 py-2 bg-white border border-red-200 text-red-600 text-sm font-medium rounded-lg hover:bg-red-50 transition-colors shrink-0">
+                  Revoke
+                </button>
               </div>
-            ))}
+            )) : (
+              <div className="p-8 text-center text-slate-500">
+                <Monitor size={28} className="mx-auto mb-2 text-slate-200" />
+                <p className="text-sm font-medium">No active sessions found.</p>
+              </div>
+            )}
           </div>
         </section>
 
@@ -105,24 +132,27 @@ export default async function SecurityCenter() {
               Recent Security Events
             </h2>
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-100">
-              {securityEvents.map(event => (
-                <div key={event.id} className="p-4 flex items-start gap-4 hover:bg-slate-50">
-                  <div className="mt-1">
-                    {event.type === "CRITICAL" && <Shield className="text-purple-500" size={18} />}
-                    {event.type === "WARNING" && <AlertTriangle className="text-orange-500" size={18} />}
-                    {event.type === "INFO" && <Shield className="text-blue-500" size={18} />}
-                  </div>
+              {securityEvents.length > 0 ? securityEvents.map(event => (
+                <div key={event._id.toString()} className="p-4 flex items-start gap-4 hover:bg-slate-50">
+                  <div className="mt-1">{getSeverityIcon(event)}</div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-slate-900 text-sm">{event.message}</h3>
+                    <h3 className="font-bold text-slate-900 text-sm">{event.action || "Security Event"}</h3>
                     <div className="text-xs text-slate-500 mt-1">
-                      User: {event.user} • IP: {event.ip}
+                      {event.userName || event.userId || "Unknown User"}
+                      {event.ip && ` • IP: ${event.ip}`}
                     </div>
                   </div>
                   <div className="text-xs font-medium text-slate-400 shrink-0 whitespace-nowrap">
-                    {format(event.time, "MMM d, h:mm a")}
+                    {formatDistanceToNow(new Date(event.createdAt || new Date()))} ago
                   </div>
                 </div>
-              ))}
+              )) : (
+                <div className="p-8 text-center text-slate-500">
+                  <Shield size={28} className="mx-auto mb-2 text-slate-200" />
+                  <p className="text-sm font-medium">No security events recorded.</p>
+                  <p className="text-xs text-slate-400 mt-1">Events will appear as user and system actions are logged.</p>
+                </div>
+              )}
             </div>
           </div>
 

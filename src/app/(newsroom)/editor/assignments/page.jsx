@@ -74,7 +74,7 @@ export default async function EditorAssignmentsPage() {
                     <p className="text-xs text-slate-500 mt-1 line-clamp-1">{assignment.description}</p>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-700">
-                    ID: {assignment.journalistId.substring(0,6)}
+                    {assignment.journalistName || "Unknown"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {getStatusBadge(assignment.status)}
