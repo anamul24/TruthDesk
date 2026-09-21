@@ -15,24 +15,30 @@ export async function PUT(request, { params }) {
 
     const { id } = await params;
     const body = await request.json();
-    const { text, url, expiresAt } = body;
-
-    if (!text || text.trim().length < 3) {
-      return NextResponse.json({ error: "Text is required" }, { status: 400 });
-    }
+    const { text, url, expiresAt, isActive } = body;
 
     const collection = await getCollection(COLLECTIONS.BREAKING_NEWS);
+    
+    // Allow partial updates
+    const updateFields = {
+      updatedAt: new Date(),
+      updatedBy: session.user.name,
+    };
+    
+    if (text !== undefined) {
+      if (text.trim().length < 3) {
+        return NextResponse.json({ error: "Text is required" }, { status: 400 });
+      }
+      updateFields.text = text.trim();
+    }
+    
+    if (url !== undefined) updateFields.url = url?.trim() || null;
+    if (expiresAt !== undefined) updateFields.expiresAt = expiresAt ? new Date(expiresAt) : null;
+    if (isActive !== undefined) updateFields.isActive = isActive;
+
     const result = await collection.updateOne(
       { _id: new ObjectId(id) },
-      {
-        $set: {
-          text: text.trim(),
-          url: url?.trim() || null,
-          expiresAt: expiresAt ? new Date(expiresAt) : null,
-          updatedAt: new Date(),
-          updatedBy: session.user.name,
-        },
-      }
+      { $set: updateFields }
     );
 
     if (result.matchedCount === 0) {

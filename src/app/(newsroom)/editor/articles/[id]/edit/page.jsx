@@ -152,7 +152,7 @@ export default function EditorEditArticlePage() {
   return (
     <div className="flex flex-col lg:flex-row h-full min-h-screen bg-slate-50">
       {/* Main Content Area */}
-      <div className="flex-1 lg:max-w-4xl border-r border-slate-200 bg-white shadow-sm z-10">
+      <div className="flex-1 border-r border-slate-200 bg-white shadow-sm z-10 overflow-x-hidden">
         {/* Top Bar */}
         <div className="flex items-center gap-4 px-6 py-4 border-b border-slate-200">
           <Link
@@ -167,7 +167,7 @@ export default function EditorEditArticlePage() {
           </span>
         </div>
 
-        <form id="article-form" className="p-6 md:p-10 max-w-3xl mx-auto space-y-8">
+        <form id="article-form" className="p-6 md:p-10 w-full space-y-8">
           <div className="space-y-4">
             <input
               type="text"

@@ -9,6 +9,7 @@ export default async function EditorAnalytics() {
   await requireRole([USER_ROLES.EDITOR, USER_ROLES.ADMIN]);
   
   const articlesDb = await getCollection(COLLECTIONS.ARTICLES);
+  const usersDb = await getCollection(COLLECTIONS.USERS);
   
   // High-level analytics
   const allArticles = await articlesDb.find({}).toArray();
@@ -18,13 +19,27 @@ export default async function EditorAnalytics() {
   
   const totalViews = published.reduce((acc, curr) => acc + (curr.stats?.views || 0), 0);
   
-  // Dummy Team Output for UI demonstration since we don't have a complex join for users/articles yet
-  const teamOutput = [
-    { name: "John Doe", role: "Journalist", articles: 24, views: 14200, revisionRate: "12%" },
-    { name: "Jane Smith", role: "Journalist", articles: 18, views: 28500, revisionRate: "5%" },
-    { name: "Rafiq Ahmed", role: "Journalist", articles: 15, views: 9800, revisionRate: "20%" },
-    { name: "Sarah Khan", role: "Journalist", articles: 12, views: 32000, revisionRate: "2%" },
-  ];
+  const journalists = await usersDb.find({ role: "journalist" }).toArray();
+  
+  // Real Team Output calculation
+  const teamOutput = journalists.map(journalist => {
+    const journalistIdStr = journalist._id.toString();
+    const journalistArticles = allArticles.filter(a => String(a.authorId) === journalistIdStr);
+    const publishedArticles = journalistArticles.filter(a => a.status === "PUBLISHED");
+    const views = publishedArticles.reduce((acc, curr) => acc + (curr.stats?.views || 0), 0);
+    const revNeeded = journalistArticles.filter(a => a.status === "NEEDS_CHANGES").length;
+    const revisionRate = journalistArticles.length > 0 
+      ? Math.round((revNeeded / journalistArticles.length) * 100) 
+      : 0;
+      
+    return {
+      name: journalist.name || "Unknown",
+      role: "Journalist",
+      articles: publishedArticles.length,
+      views: views,
+      revisionRate: `${revisionRate}%`
+    };
+  }).sort((a, b) => b.articles - a.articles || b.views - a.views);
 
   return (
     <div className="p-6 md:p-8 lg:p-10 max-w-7xl mx-auto space-y-10 font-sans">
@@ -46,7 +61,7 @@ export default async function EditorAnalytics() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard label="Total Published" value={published.length} icon="Newspaper" color="green" />
         <StatsCard label="Total Network Views" value={totalViews.toLocaleString()} icon="TrendingUp" color="blue" />
-        <StatsCard label="Revision Rate" value={`${Math.round((needingChanges.length / Math.max(allArticles.length, 1)) * 100)}%`} icon="AlertCircle" color="orange" />
+        <StatsCard label="Revision Rate" value={`${allArticles.length > 0 ? Math.round((needingChanges.length / allArticles.length) * 100) : 0}%`} icon="AlertCircle" color="orange" />
         <StatsCard label="Avg. Review Time" value="2.4 hrs" icon="Clock" color="indigo" />
       </div>
 
@@ -69,6 +84,13 @@ export default async function EditorAnalytics() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
+              {teamOutput.length === 0 && (
+                <tr>
+                  <td colSpan="5" className="px-6 py-8 text-center text-slate-500">
+                    No active journalists found.
+                  </td>
+                </tr>
+              )}
               {teamOutput.map((member, i) => (
                 <tr key={i} className="hover:bg-slate-50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
