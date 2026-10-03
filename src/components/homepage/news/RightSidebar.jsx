@@ -26,7 +26,7 @@ const RightSidebar = () => {
         <div className="p-4">
           <ul className="space-y-2.5">
             {["Climate Summit", "AI Governance", "World Cricket", "Streaming Wars", "Ancient Manuscripts"].map((topic, i) => (
-              <li key={i} className="flex items-center gap-2.5 text-sm text-gray-600 hover:text-red-600 cursor-pointer transition-colors">
+              <li key={i} className="flex items-center gap-2.5 text-sm text-gray-500 hover:text-red-600 cursor-pointer transition-colors">
                 <span className="text-xs font-bold text-gray-300 w-4 text-right">#{i + 1}</span>
                 <span className="font-medium">{topic}</span>
               </li>

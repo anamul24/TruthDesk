@@ -13,7 +13,8 @@ import DOMPurify from "isomorphic-dompurify";
 export default async function EditorReviewArticle({ params }) {
   await requireRole([USER_ROLES.EDITOR, USER_ROLES.ADMIN]);
   
-  const { id } = params;
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
   let articleId;
   try {
     articleId = new ObjectId(id);

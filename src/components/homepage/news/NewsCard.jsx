@@ -42,7 +42,7 @@ const NewsCard = ({ news, variant = "small" }) => {
         {/* Category overlay badge */}
         {news.categoryName && (
           <div className="absolute top-3 left-3">
-            <span className="bg-red-600 text-white text-[10px] font-bold uppercase tracking-wide px-2 py-0.5">
+            <span className="bg-red-600 text-white text-xs font-bold uppercase tracking-wide px-2 py-0.5">
               {news.categoryName}
             </span>
           </div>
@@ -65,8 +65,8 @@ const NewsCard = ({ news, variant = "small" }) => {
           </p>
         )}
 
-        <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
-          <span className="font-medium text-gray-600">{news.author?.name}</span>
+        <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+          <span className="font-medium text-gray-500">{news.author?.name}</span>
           {timeAgo && (
             <>
               <span>·</span>

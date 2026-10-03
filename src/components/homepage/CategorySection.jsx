@@ -38,7 +38,7 @@ const CategorySection = ({ categoryName, categoryId, articles, layoutIndex = 0 }
         <div className="flex-1 h-px bg-gray-100" />
         <Link
           href={`/category/${categoryId}`}
-          className="text-xs font-semibold text-gray-400 hover:text-red-600 transition-colors shrink-0"
+          className="text-xs font-semibold text-gray-500 hover:text-red-600 transition-colors shrink-0"
         >
           See all →
         </Link>

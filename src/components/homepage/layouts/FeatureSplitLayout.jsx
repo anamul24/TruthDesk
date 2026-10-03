@@ -39,7 +39,7 @@ const FeatureSplitLayout = ({ articles }) => {
                 )}
                 {main.categoryName && (
                   <div className="absolute top-3 left-3">
-                    <span className="bg-red-600 text-white text-[10px] font-bold uppercase tracking-wide px-2 py-0.5">{main.categoryName}</span>
+                    <span className="bg-red-600 text-white text-xs font-bold uppercase tracking-wide px-2 py-0.5">{main.categoryName}</span>
                   </div>
                 )}
               </div>
@@ -47,8 +47,8 @@ const FeatureSplitLayout = ({ articles }) => {
                 {main.title}
               </h2>
               {main.excerpt && <p className="text-gray-500 text-sm line-clamp-2">{main.excerpt}</p>}
-              <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
-                <span className="font-medium text-gray-600">{main.author?.name}</span>
+              <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+                <span className="font-medium text-gray-500">{main.author?.name}</span>
                 {main.author?.published_date && <><span>·</span><span className="flex items-center gap-1"><Clock size={10} />{main.author.published_date}</span></>}
               </div>
             </Link>
@@ -68,12 +68,12 @@ const FeatureSplitLayout = ({ articles }) => {
                   )}
                   {article.categoryName && (
                     <div className="absolute top-2 left-2">
-                      <span className="bg-red-600 text-white text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5">{article.categoryName}</span>
+                      <span className="bg-red-600 text-white text-xs font-bold uppercase tracking-wide px-1.5 py-0.5">{article.categoryName}</span>
                     </div>
                   )}
                 </div>
                 <h3 className="font-bold text-sm text-gray-900 leading-snug group-hover:text-red-600 transition-colors line-clamp-2">{article.title}</h3>
-                <p className="text-xs text-gray-400 mt-1 flex items-center gap-1"><Clock size={9} />{article.author?.published_date}</p>
+                <p className="text-xs text-gray-500 mt-1 flex items-center gap-1"><Clock size={9} />{article.author?.published_date}</p>
               </Link>
               {i === 0 && third && <div className="border-b border-gray-100 mt-5" />}
             </div>
@@ -87,10 +87,10 @@ const FeatureSplitLayout = ({ articles }) => {
           {bottomRow.map((article) => (
             <Link key={article._id} href={`/news/${article._id}`} className="group block" aria-label={article.title}>
               {article.categoryName && (
-                <span className="category-badge text-[10px] mb-1 block">{article.categoryName}</span>
+                <span className="category-badge text-xs mb-1 block">{article.categoryName}</span>
               )}
               <h3 className="font-bold text-sm text-gray-900 leading-snug group-hover:text-red-600 transition-colors line-clamp-3">{article.title}</h3>
-              <p className="text-xs text-gray-400 mt-1.5 flex items-center gap-1"><Clock size={9} />{article.author?.published_date}</p>
+              <p className="text-xs text-gray-500 mt-1.5 flex items-center gap-1"><Clock size={9} />{article.author?.published_date}</p>
             </Link>
           ))}
         </div>

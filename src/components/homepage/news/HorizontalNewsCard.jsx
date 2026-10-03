@@ -35,7 +35,7 @@ const HorizontalNewsCard = ({ news, showExcerpt = true }) => {
       {/* Text */}
       <div className="flex-1 min-w-0">
         {news.categoryName && (
-          <span className="category-badge text-[10px] mb-1 block">
+          <span className="category-badge text-xs mb-1 block">
             {news.categoryName}
           </span>
         )}
@@ -47,7 +47,7 @@ const HorizontalNewsCard = ({ news, showExcerpt = true }) => {
             {news.excerpt}
           </p>
         )}
-        <div className="flex items-center gap-1.5 mt-1.5 text-xs text-gray-400">
+        <div className="flex items-center gap-1.5 mt-1.5 text-xs text-gray-500">
           <span className="font-medium text-gray-500">{news.author?.name}</span>
           {news.author?.published_date && (
             <>

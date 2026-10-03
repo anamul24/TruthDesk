@@ -23,7 +23,7 @@ const LatestNewsSection = ({ latestArticles, mostReadArticles }) => {
                 ))}
               </div>
             ) : (
-              <p className="text-gray-400 text-sm py-8">No articles yet.</p>
+              <p className="text-gray-500 text-sm py-8">No articles yet.</p>
             )}
           </div>
 
@@ -53,14 +53,14 @@ const LatestNewsSection = ({ latestArticles, mostReadArticles }) => {
 
                       <div className="flex-1 min-w-0">
                         {article.categoryName && (
-                          <span className="category-badge text-[10px] mb-1 block">
+                          <span className="category-badge text-xs mb-1 block">
                             {article.categoryName}
                           </span>
                         )}
                         <h4 className="font-bold text-sm text-gray-900 leading-snug line-clamp-2 group-hover:text-red-600 transition-colors">
                           {article.title}
                         </h4>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-xs text-gray-500 mt-1">
                           {article.author?.published_date}
                         </p>
                       </div>
@@ -73,7 +73,7 @@ const LatestNewsSection = ({ latestArticles, mostReadArticles }) => {
                 ))}
               </ol>
             ) : (
-              <p className="text-gray-400 text-sm">No data available.</p>
+              <p className="text-gray-500 text-sm">No data available.</p>
             )}
           </div>
         </div>

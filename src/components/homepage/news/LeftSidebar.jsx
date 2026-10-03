@@ -44,7 +44,7 @@ const LeftSidebar = async () => {
                     <h4 className="font-bold text-sm text-gray-800 leading-tight group-hover:text-red-600 transition-colors line-clamp-2">
                       {n.title}
                     </h4>
-                    <p className="text-xs text-gray-400 mt-1">{n.author?.name}</p>
+                    <p className="text-xs text-gray-500 mt-1">{n.author?.name}</p>
                   </div>
                 </div>
                 {i < topNews.length - 1 && (
@@ -55,7 +55,7 @@ const LeftSidebar = async () => {
           ) : (
             <div className="text-center py-6">
               <Newspaper size={28} className="mx-auto text-gray-300 mb-2" />
-              <p className="text-xs text-gray-400">No top news yet</p>
+              <p className="text-xs text-gray-500">No top news yet</p>
             </div>
           )}
         </div>

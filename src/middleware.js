@@ -39,52 +39,9 @@ export async function middleware(request) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // For role-based access, we need to validate the session server-side.
-  // We'll call our own API to verify the session and role.
-  try {
-    const sessionRes = await fetch(
-      new URL("/api/auth/get-session", request.url),
-      {
-        headers: {
-          cookie: request.headers.get("cookie") || "",
-        },
-      }
-    );
-
-    if (!sessionRes.ok) {
-      const loginUrl = new URL("/login", request.url);
-      loginUrl.searchParams.set("callbackUrl", pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-
-    const session = await sessionRes.json();
-    const userRole = session?.user?.role;
-
-    if (!userRole) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-
-    // Regular users have no access to newsroom routes → redirect to home
-    if (userRole === "user") {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-
-    // Check if user's role is allowed for this route
-    const allowedRoles = PROTECTED_ROUTES[matchedPrefix];
-    if (!allowedRoles.includes(userRole)) {
-      // Redirect to their correct dashboard
-      const correctPath = ROLE_REDIRECTS[userRole] || "/";
-      if (correctPath !== pathname) {
-        return NextResponse.redirect(new URL(correctPath, request.url));
-      }
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-
-    return NextResponse.next();
-  } catch (error) {
-    console.error("Middleware auth check failed:", error);
-    return NextResponse.next();
-  }
+  // We rely on Next.js server components (layouts/pages) to verify roles and the actual session.
+  // This prevents extremely slow navigation delays caused by making HTTP fetch calls on every client-side navigation.
+  return NextResponse.next();
 }
 
 export const config = {

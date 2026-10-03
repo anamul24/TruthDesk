@@ -19,14 +19,19 @@ const HorizontalListLayout = ({ articles }) => {
   const items = articles.slice(0, 5);
 
   return (
-    <div className="divide-y divide-gray-100">
+    <div>
       {items.map((article, i) => (
         <Link
           key={article._id}
           href={`/news/${article._id}`}
-          className="group flex gap-4 py-4 first:pt-0 last:pb-0 hover:opacity-90 transition-opacity items-start"
+          className="group flex gap-4 items-start py-4 border-b border-gray-100 last:border-0 hover:opacity-90 transition-opacity"
           aria-label={article.title}
         >
+          {/* Index number */}
+          <span className="text-3xl font-black text-gray-100 hidden lg:block flex-shrink-0 w-8 text-right leading-none mt-1">
+            {String(i + 1).padStart(2, "0")}
+          </span>
+
           {/* Thumbnail */}
           <div className="relative w-28 h-20 md:w-36 md:h-24 flex-shrink-0 overflow-hidden rounded-lg img-hover">
             {article.image_url ? (
@@ -48,7 +53,7 @@ const HorizontalListLayout = ({ articles }) => {
           {/* Text */}
           <div className="flex-1 min-w-0">
             {article.categoryName && (
-              <span className="category-badge text-[10px] mb-1 block">{article.categoryName}</span>
+              <span className="category-badge text-xs mb-1 block">{article.categoryName}</span>
             )}
             <h3 className="font-bold text-sm md:text-base text-gray-900 leading-snug line-clamp-2 group-hover:text-red-600 transition-colors">
               {article.title}
@@ -58,8 +63,8 @@ const HorizontalListLayout = ({ articles }) => {
                 {article.excerpt}
               </p>
             )}
-            <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
-              <span className="font-medium text-gray-600">{article.author?.name}</span>
+            <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+              <span className="font-medium text-gray-500">{article.author?.name}</span>
               {article.author?.published_date && (
                 <>
                   <span>·</span>
@@ -71,11 +76,6 @@ const HorizontalListLayout = ({ articles }) => {
               )}
             </div>
           </div>
-
-          {/* Index number */}
-          <span className="text-3xl font-black text-gray-100 hidden lg:block flex-shrink-0 leading-none mt-1">
-            {String(i + 1).padStart(2, "0")}
-          </span>
         </Link>
       ))}
     </div>

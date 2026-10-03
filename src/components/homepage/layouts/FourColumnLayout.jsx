@@ -47,7 +47,7 @@ const FourColumnLayout = ({ articles }) => {
 
           {/* Category */}
           {article.categoryName && (
-            <span className="category-badge text-[9px] mb-1 block">{article.categoryName}</span>
+            <span className="category-badge text-[10px] mb-1 block">{article.categoryName}</span>
           )}
 
           {/* Title */}
@@ -56,7 +56,7 @@ const FourColumnLayout = ({ articles }) => {
           </h3>
 
           {/* Time */}
-          <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-0.5">
+          <p className="text-xs text-gray-500 mt-1 flex items-center gap-0.5">
             <Clock size={8} />
             {article.author?.published_date}
           </p>

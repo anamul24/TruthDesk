@@ -12,9 +12,10 @@ export default async function EditorialReviewQueue({ searchParams }) {
   
   const articlesDb = await getCollection(COLLECTIONS.ARTICLES);
   
+  const resolvedSearchParams = await searchParams;
   // Parse search params for filters
-  const view = searchParams?.view || "list";
-  const statusFilter = searchParams?.status || "ALL";
+  const view = resolvedSearchParams?.view || "list";
+  const statusFilter = resolvedSearchParams?.status || "ALL";
 
   let query = { 
     status: { $in: ["SUBMITTED", "IN_REVIEW", "FACT_CHECK", "RESUBMITTED", "NEEDS_CHANGES"] } 

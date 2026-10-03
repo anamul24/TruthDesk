@@ -51,7 +51,7 @@ const EditorsPicksSection = ({ articles }) => {
 
               {/* Editor's Pick badge */}
               <div className="absolute top-3 right-3">
-                <span className="bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 flex items-center gap-1">
+                <span className="bg-amber-500 text-white text-xs font-bold uppercase tracking-wide px-2 py-0.5 flex items-center gap-1">
                   <Star size={8} className="fill-white" />
                   Pick
                 </span>
@@ -60,7 +60,7 @@ const EditorsPicksSection = ({ articles }) => {
 
             {/* Category */}
             {article.categoryName && (
-              <span className="category-badge text-[10px] mb-1 block">
+              <span className="category-badge text-xs mb-1 block">
                 {article.categoryName}
               </span>
             )}
@@ -78,8 +78,8 @@ const EditorsPicksSection = ({ articles }) => {
             )}
 
             {/* Byline */}
-            <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
-              <span className="font-medium text-gray-600">{article.author?.name}</span>
+            <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+              <span className="font-medium text-gray-500">{article.author?.name}</span>
               {article.author?.published_date && (
                 <>
                   <span>·</span>

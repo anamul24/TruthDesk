@@ -16,8 +16,10 @@ const ThreeColumnLayout = ({ articles }) => {
 
   const items = articles.slice(0, 6);
 
+  const gridCols = items.length === 4 || items.length === 2 ? "lg:grid-cols-2" : "lg:grid-cols-3";
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className={`grid grid-cols-1 sm:grid-cols-2 ${gridCols} gap-6`}>
       {items.map((article, i) => (
         <Link
           key={article._id}
@@ -43,7 +45,7 @@ const ThreeColumnLayout = ({ articles }) => {
             )}
             {article.categoryName && (
               <div className="absolute top-2 left-2">
-                <span className="bg-red-600 text-white text-[10px] font-bold uppercase tracking-wide px-2 py-0.5">
+                <span className="bg-red-600 text-white text-xs font-bold uppercase tracking-wide px-2 py-0.5">
                   {article.categoryName}
                 </span>
               </div>
@@ -59,8 +61,8 @@ const ThreeColumnLayout = ({ articles }) => {
               {article.excerpt}
             </p>
           )}
-          <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
-            <span className="font-medium text-gray-600">{article.author?.name}</span>
+          <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+            <span className="font-medium text-gray-500">{article.author?.name}</span>
             {article.author?.published_date && (
               <>
                 <span>·</span>

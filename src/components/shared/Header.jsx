@@ -17,7 +17,7 @@ const Header = () => {
           TruthDesk
         </h1>
 
-        <div className="w-full flex justify-between items-center mt-4 border-b border-t border-slate-700 py-2 text-xs font-medium text-slate-300 uppercase tracking-wide">
+        <div className="w-full flex justify-between items-center mt-4 border-b border-t border-slate-700 py-2 text-xs font-medium text-slate-300 tracking-wide">
           <div className="flex items-center gap-3">
             <span>
               {new Intl.DateTimeFormat("en-US", {
